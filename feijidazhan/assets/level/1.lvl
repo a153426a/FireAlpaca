@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<level width="1000" height="780">    
-    <entity x="100" y="100" type="stone"/>
-    <entity x="200" y="200" type="stone"/>
-    <entity x="550" y="300" type="breakable"/>
-    <entity x="400" y="270" type="powerup"/>
-    <entity x="500" y="400" type="powerup"/>
-    <entity x="600" y="400" type="powerup"/>
-</level>
