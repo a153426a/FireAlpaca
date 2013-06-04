@@ -1,6 +1,7 @@
 package com.example.manager;
 
 import org.andengine.engine.Engine;
+import org.andengine.engine.camera.BoundCamera;
 import org.andengine.engine.camera.Camera;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
@@ -28,7 +29,7 @@ public class ResourcesManager {
 	
 	public Engine engine; 
 	public GameActivity activity; 
-	public Camera camera; 
+	public BoundCamera camera; 
 	public VertexBufferObjectManager vbom; 
 	
 	//splash scene fields
@@ -52,9 +53,11 @@ public class ResourcesManager {
 	public ITextureRegion stone_region;
 	public ITextureRegion breakable_region;
 	public ITextureRegion coin_region;
+	public ITextureRegion complete_window_region;
 	
 	//player region 
 	public ITiledTextureRegion player_region;
+	public ITiledTextureRegion complete_stars_region;
 	
 	public void loadMenuResources() { 
 		
@@ -90,6 +93,10 @@ public class ResourcesManager {
 		breakable_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "breakable.png");
 		coin_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "coin.png");
 		player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "player.png", 3, 1); 
+		complete_window_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "levelComplete.png");
+		complete_stars_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "star.png", 2, 1);
+
+		
 		try
 		{
 			this.gameTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0,1,0));
@@ -141,7 +148,7 @@ public class ResourcesManager {
 		
 	}
 	
-	public static void prepareManager(Engine engine, GameActivity activity, Camera camera, VertexBufferObjectManager vbom) { 
+	public static void prepareManager(Engine engine, GameActivity activity, BoundCamera camera, VertexBufferObjectManager vbom) { 
 		getInstance().engine = engine; 
 		getInstance().activity = activity; 
 		getInstance().camera = camera; 
