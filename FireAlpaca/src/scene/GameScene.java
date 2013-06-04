@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.hud.HUD;
+import org.andengine.engine.handler.timer.ITimerCallback;
+import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.LoopEntityModifier;
 import org.andengine.entity.modifier.ScaleModifier;
@@ -30,10 +32,18 @@ import Object.Player;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.example.base.BaseScene;
 import com.example.manager.SceneManager;
 import com.example.manager.SceneManager.SceneType;
+
+import extra.LevelCompleteWindow;
+import extra.LevelCompleteWindow.StarsCount;
 
 public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	
@@ -53,7 +63,12 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BREAKABLE = "breakable";
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_COIN = "coin";	
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLAYER = "player"; 
+	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_LEVEL_COMPLETE = "levelComplete";
 	private Player player;
+	
+	private Text gameOverText;
+	private LevelCompleteWindow levelCompleteWindow;
+	private boolean gameOverDisplayed = false;
 
 	@Override
 	public void createScene() {
@@ -63,6 +78,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 		createPhysics(); 
 		loadLevel(1);
 		setOnSceneTouchListener(this);
+		createGameOverText();
+		levelCompleteWindow = new LevelCompleteWindow(vbom);
+		
 	}
 
 	@Override
@@ -124,6 +142,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 		
 		physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, 0), false); 
 		registerUpdateHandler(physicsWorld); 
+		physicsWorld.setContactListener(contactListener());
 		
 	}
 	
@@ -138,8 +157,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 				final int width = SAXUtils.getIntAttributeOrThrow(pAttributes, LevelConstants.TAG_LEVEL_ATTRIBUTE_WIDTH);
 				final int height = SAXUtils.getIntAttributeOrThrow(pAttributes, LevelConstants.TAG_LEVEL_ATTRIBUTE_HEIGHT);
 				
-				//TODO
-				
+				camera.setBounds(0, 0, width, height); // here we set camera bounds
+		        camera.setBoundsEnabled(true);
+		        
 				return GameScene.this;
 			}
 		});
@@ -156,8 +176,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	            
 	            if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_STONE))
 	            {
-	                levelObject = new Sprite(x, y, resourcesManager.stone_region, vbom);
-	                PhysicsFactory.createBoxBody(physicsWorld, levelObject, BodyType.StaticBody, FIXTURE_DEF).setUserData("stone");
+	                levelObject = new Sprite(x, y, resourcesManager.stone_region, vbom); 
+	                PhysicsFactory.createBoxBody(physicsWorld, levelObject, BodyType.StaticBody, FIXTURE_DEF).setUserData("stone"); 
+	                
 	            } 
 	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BREAKABLE))
 	            {
@@ -175,11 +196,13 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	                    {
 	                        super.onManagedUpdate(pSecondsElapsed);
 	                        
-	                        /** 
-	                         * TODO
-	                         * we will later check if player collide with this 
-	                         * and if it does, we will increase attack and hide this power up
-	                         */
+	                        if (player.collidesWith(this)) { 
+	                        	
+	                            addToScore(100);
+	                            this.setVisible(false);
+	                            this.setIgnoreUpdate(true);
+	                        }
+	                        
 	                    }
 	                };
 	                levelObject.registerEntityModifier(new LoopEntityModifier(new ScaleModifier(1, 1, 1.3f)));
@@ -190,12 +213,35 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	                player = new Player(x, y, vbom, camera, physicsWorld)
 	                {
 	                    @Override
-	                    public void onDie()
-	                    {
-	                        
+	                    public void onDie() {
+	                    	if (!gameOverDisplayed) {
+	                    		
+	                            displayGameOverText();
+	                        }
+	                    	
 	                    }
 	                };
 	                levelObject = player;
+	            }
+	            
+	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_LEVEL_COMPLETE))
+	            {
+	                levelObject = new Sprite(x, y, resourcesManager.complete_stars_region, vbom)
+	                {
+	                    @Override
+	                    protected void onManagedUpdate(float pSecondsElapsed) 
+	                    {
+	                        super.onManagedUpdate(pSecondsElapsed);
+
+	                        if (player.collidesWith(this))
+	                        {
+	                            levelCompleteWindow.display(StarsCount.TWO, GameScene.this, camera);
+	                            this.setVisible(false);
+	                            this.setIgnoreUpdate(true);
+	                        }
+	                    }
+	                };
+	                levelObject.registerEntityModifier(new LoopEntityModifier(new ScaleModifier(1, 1, 1.3f)));
 	            }
 	                     
 	            else
@@ -227,9 +273,94 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	            player.jump();
 	            
 	        }
+	        
 	    }
+		
 	    return false;
 	    
+	}
+	
+	private void createGameOverText() { 
+		
+	    gameOverText = new Text(0, 0, resourcesManager.font, "Game Over!", vbom);
+	    
+	}
+
+	private void displayGameOverText() { 
+		
+	    gameOverText.setPosition(camera.getCenterX(), camera.getCenterY());
+	    attachChild(gameOverText);
+	    gameOverDisplayed = true;
+	    
+	}
+	
+	private ContactListener contactListener()
+	{
+	    ContactListener contactListener = new ContactListener()
+	    {
+	        public void beginContact(Contact contact)
+	        {
+	            final Fixture x1 = contact.getFixtureA();
+	            final Fixture x2 = contact.getFixtureB();
+	            
+	            
+	            if (x1.getBody().getUserData().equals("stone") && x2.getBody().getUserData().equals("player"))
+	            {
+	                player.onDie();
+	            }
+	            
+	            if (x1.getBody().getUserData().equals("breakable") && x2.getBody().getUserData().equals("player"))
+	            {
+	                engine.registerUpdateHandler(new TimerHandler(0.2f, new ITimerCallback()
+	                {                                    
+	                    public void onTimePassed(final TimerHandler pTimerHandler)
+	                    {
+	                    	pTimerHandler.reset();
+	                        engine.unregisterUpdateHandler(pTimerHandler);
+	                        player.onDie();
+	                    }
+	                }));
+	            }
+
+	            if (x1.getBody().getUserData() != null && x2.getBody().getUserData() != null)
+	            {
+	                if (x2.getBody().getUserData().equals("player"))
+	                {
+	                    //TODO;
+	                }
+	            }
+	            
+	        }
+
+	        public void endContact(Contact contact)
+	        {
+	            final Fixture x1 = contact.getFixtureA();
+	            final Fixture x2 = contact.getFixtureB();
+
+	            if (x1.getBody().getUserData() != null && x2.getBody().getUserData() != null)
+	            {
+	                if (x2.getBody().getUserData().equals("player"))
+	                {
+	                    //TODO;
+	                }
+	            }
+	        }
+
+			@Override
+			public void preSolve(Contact contact, Manifold oldManifold) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void postSolve(Contact contact, ContactImpulse impulse) {
+				// TODO Auto-generated method stub
+				
+			}
+
+	        
+	    };
+	    return contactListener;
 	}
 	
 }

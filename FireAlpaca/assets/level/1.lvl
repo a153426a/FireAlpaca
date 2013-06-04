@@ -6,4 +6,5 @@
     <entity x="400" y="270" type="coin"/>
     <entity x="500" y="400" type="coin"/>
     <entity x="60"  y="60" type ="player"/>
+    <entity x="750" y="60" type = "levelComplete"/>
 </level>
