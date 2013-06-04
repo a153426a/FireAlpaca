@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<level width="1000" height="780">    
+<level width="800" height="480">    
     <entity x="100" y="100" type="stone"/>
     <entity x="200" y="200" type="stone"/>
     <entity x="550" y="300" type="breakable"/>
