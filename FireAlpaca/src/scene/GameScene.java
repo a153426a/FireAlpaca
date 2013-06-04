@@ -8,11 +8,14 @@ import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.LoopEntityModifier;
 import org.andengine.entity.modifier.ScaleModifier;
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.entity.text.Text;
+import org.andengine.entity.text.TextOptions;
 import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.opengl.util.GLState;
 import org.andengine.util.SAXUtils;
+import org.andengine.util.adt.align.HorizontalAlign;
 import org.andengine.util.level.EntityLoader;
 import org.andengine.util.level.constants.LevelConstants;
 import org.andengine.util.level.simple.SimpleLevelEntityLoaderData;
@@ -30,7 +33,9 @@ import com.example.manager.SceneManager.SceneType;
 public class GameScene extends BaseScene {
 	
 	private HUD gameHUD; 
-	private PhysicsWorld physicsWorld;
+	private PhysicsWorld physicsWorld; 
+	private Text scoreText; 
+	private int score = 0; 
 	
 	//game graphic fields
 	private static final String TAG_ENTITY = "entity";
@@ -90,8 +95,21 @@ public class GameScene extends BaseScene {
 	private void createHUD() { 
 		
 		gameHUD = new HUD(); 
+		
+		scoreText = new Text(20, 420, resourcesManager.font, "Score: 0123456789", new TextOptions(HorizontalAlign.LEFT), vbom);
+	    scoreText.setAnchorCenter(0, 0);    
+	    scoreText.setText("Score: 0");
+	    gameHUD.attachChild(scoreText);
+		
 		camera.setHUD(gameHUD); 
 		
+	} 
+	
+	private void addToScore(int i) {
+		
+	    score += i;
+	    scoreText.setText("Score: " + score);
+	    
 	}
 	
 	private void createPhysics() { 
