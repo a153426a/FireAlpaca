@@ -56,6 +56,11 @@ public class ResourcesManager {
 	//player region 
 	public ITiledTextureRegion player_region;
 	
+	//enemy region
+	public ITiledTextureRegion red_enemy_region;
+	public ITiledTextureRegion blue_enemy_region;
+	public ITiledTextureRegion yellow_enemy_region;
+	
 	public void loadMenuResources() { 
 		
 		loadMenuGraphics(); 
@@ -90,6 +95,11 @@ public class ResourcesManager {
 		breakable_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "breakable.png");
 		coin_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "coin.png");
 		player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "player.png", 3, 1); 
+		red_enemy_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "red_enemy.png", 3, 1); 
+		blue_enemy_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "blue_enemy.png", 3, 1);
+		yellow_enemy_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "yellow.png", 3, 1); 
+		
+		
 		try
 		{
 			this.gameTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0,1,0));
