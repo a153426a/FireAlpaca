@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>feijidazhan</name>
+	<name>Fire Alpaca</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -34,7 +34,13 @@
 		<link>
 			<name>assets/gfx/menu/menu_background.png</name>
 			<type>1</type>
-			<locationURI>PROJECT_LOC/assets/menu/menu_background.png</locationURI>
+			<locationURI>copy_PROJECT_LOC/assets/menu/menu_background.png</locationURI>
 		</link>
 	</linkedResources>
+	<variableList>
+		<variable>
+			<name>copy_PROJECT_LOC</name>
+			<value>$%7BPARENT-2-PROJECT_LOC%7D/WebApp/FireAlpaca</value>
+		</variable>
+	</variableList>
 </projectDescription>
