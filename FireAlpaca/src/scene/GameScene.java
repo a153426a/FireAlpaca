@@ -41,6 +41,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	private PhysicsWorld physicsWorld; 
 	private Text scoreText; 
 	private int score = 0; 
+	private boolean firstTouch = false;
 	
 	//game graphic fields
 	private static final String TAG_ENTITY = "entity";
@@ -214,9 +215,18 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	@Override
 	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
 		
-		if (pSceneTouchEvent.isActionDown())
-	    {
-
+		if (pSceneTouchEvent.isActionDown()) {
+			
+	        if (!firstTouch) {
+	        	
+	            player.setRunning();
+	            firstTouch = true;
+	            
+	        } else {
+	        	
+	            player.jump();
+	            
+	        }
 	    }
 	    return false;
 	    
