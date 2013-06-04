@@ -30,8 +30,8 @@ import com.example.manager.ResourcesManager;
         private void attachStars(VertexBufferObjectManager pSpriteVertexBufferObject)
         {
             star1 = new TiledSprite(150, 150, ResourcesManager.getInstance().complete_stars_region, pSpriteVertexBufferObject);
-            star2 = new TiledSprite(325, 150, ResourcesManager.getInstance().complete_stars_region, pSpriteVertexBufferObject);
-            star3 = new TiledSprite(500, 150, ResourcesManager.getInstance().complete_stars_region, pSpriteVertexBufferObject);
+            star2 = new TiledSprite(400, 150, ResourcesManager.getInstance().complete_stars_region, pSpriteVertexBufferObject);
+            star3 = new TiledSprite(650, 150, ResourcesManager.getInstance().complete_stars_region, pSpriteVertexBufferObject);
             
             attachChild(star1);
             attachChild(star2);
