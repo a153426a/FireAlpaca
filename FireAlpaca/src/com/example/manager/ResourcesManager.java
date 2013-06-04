@@ -52,6 +52,9 @@ public class ResourcesManager {
 	public ITextureRegion breakable_region;
 	public ITextureRegion coin_region;
 	
+	//player region 
+	public ITiledTextureRegion player_region;
+	
 	public void loadMenuResources() { 
 		
 		loadMenuGraphics(); 
@@ -85,7 +88,7 @@ public class ResourcesManager {
 		stone_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "stone.png");
 		breakable_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "breakable.png");
 		coin_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "coin.png");
-		
+		player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "player.png", 2, 2); 
 		try
 		{
 			this.gameTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0,1,0));

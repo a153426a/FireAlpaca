@@ -30,7 +30,7 @@ import com.example.base.BaseScene;
 import com.example.manager.SceneManager;
 import com.example.manager.SceneManager.SceneType;
 
-public class GameScene extends BaseScene {
+public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	
 	private HUD gameHUD; 
 	private PhysicsWorld physicsWorld; 
@@ -45,7 +45,9 @@ public class GameScene extends BaseScene {
 	
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_STONE = "stone";
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BREAKABLE = "breakable";
-	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_COIN = "coin";		
+	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_COIN = "coin";	
+	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLAYER = "player"; 
+	private Player player;
 
 	@Override
 	public void createScene() {
@@ -54,6 +56,7 @@ public class GameScene extends BaseScene {
 		createHUD(); 
 		createPhysics(); 
 		loadLevel(1);
+		setOnSceneTouchListener(this);
 	}
 
 	@Override
@@ -175,6 +178,19 @@ public class GameScene extends BaseScene {
 	                };
 	                levelObject.registerEntityModifier(new LoopEntityModifier(new ScaleModifier(1, 1, 1.3f)));
 	            }
+	            
+	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLAYER))
+	            {
+	                player = new Player(x, y, vbom, camera, physicsWorld)
+	                {
+	                    @Override
+	                    public void onDie()
+	                    {
+	                        
+	                    }
+	                };
+	                levelObject = player;
+	            }
 	                     
 	            else
 	            {
@@ -189,5 +205,17 @@ public class GameScene extends BaseScene {
 
 	    levelLoader.loadLevelFromAsset(activity.getAssets(), "level/" + levelID + ".lvl");
 	 }
+	
+	@Override
+	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
+		
+		if (pSceneTouchEvent.isActionDown())
+	    {
+
+	    }
+	    return false;
+	    
+	}
+	
 }
 
