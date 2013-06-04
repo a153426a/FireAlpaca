@@ -23,9 +23,6 @@ public abstract class Player extends AnimatedSprite {
 		
 		super(pX, pY, ResourcesManager.getInstance().player_region, vbo);
 		createPhysics(camera, physicsWorld);
-		//TODO to be changed maybe ? #################################
-	    camera.setChaseEntity(this); 
-		
 	}
 	
 	private void createPhysics(final Camera camera, PhysicsWorld physicsWorld) {
@@ -61,7 +58,7 @@ public abstract class Player extends AnimatedSprite {
 		
 	    canRun = true;
 	        
-	    final long[] PLAYER_ANIMATE = new long[] { 100, 100, 100 };
+	    final long[] PLAYER_ANIMATE = new long[] { 20, 20, 20 };
 	        
 	    animate(PLAYER_ANIMATE, 0, 2, true);
 	    
