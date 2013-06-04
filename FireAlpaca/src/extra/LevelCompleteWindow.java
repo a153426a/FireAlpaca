@@ -23,7 +23,7 @@ import com.example.manager.ResourcesManager;
         
         public LevelCompleteWindow(VertexBufferObjectManager pSpriteVertexBufferObject)
         {
-            super(0, 0, 650, 400, ResourcesManager.getInstance().complete_window_region, pSpriteVertexBufferObject);
+            super(0, 0, 800, 480, ResourcesManager.getInstance().complete_window_region, pSpriteVertexBufferObject);
             attachStars(pSpriteVertexBufferObject);
         }
         
