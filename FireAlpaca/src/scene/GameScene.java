@@ -45,8 +45,7 @@ public class GameScene extends BaseScene {
 	
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_STONE = "stone";
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BREAKABLE = "breakable";
-	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_ATTACKUP = "attackup";
-	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_HEALTHUP = "healthup";		
+	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_COIN = "coin";		
 
 	@Override
 	public void createScene() {
@@ -158,9 +157,9 @@ public class GameScene extends BaseScene {
 	                body.setUserData("breakable");
 	            }
 	          
-	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_ATTACKUP))
+	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_COIN))
 	            {
-	                levelObject = new Sprite(x, y, resourcesManager.attackup_region, vbom)
+	                levelObject = new Sprite(x, y, resourcesManager.coin_region, vbom)
 	                {
 	                    @Override
 	                    protected void onManagedUpdate(float pSecondsElapsed) 
@@ -176,26 +175,7 @@ public class GameScene extends BaseScene {
 	                };
 	                levelObject.registerEntityModifier(new LoopEntityModifier(new ScaleModifier(1, 1, 1.3f)));
 	            }
-	            
-	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_HEALTHUP))
-	            {
-	                levelObject = new Sprite(x, y, resourcesManager.healthup_region, vbom)
-	                {
-	                    @Override
-	                    protected void onManagedUpdate(float pSecondsElapsed) 
-	                    {
-	                        super.onManagedUpdate(pSecondsElapsed);
-	                        
-	                        /** 
-	                         * TODO
-	                         * we will later check if player collide with this 
-	                         * and if it does, we will increase health and hide this power up 
-	                         */
-	                    }
-	                };
-	                levelObject.registerEntityModifier(new LoopEntityModifier(new ScaleModifier(1, 1, 1.3f)));
-	            }          
-	            
+	                     
 	            else
 	            {
 	                throw new IllegalArgumentException();

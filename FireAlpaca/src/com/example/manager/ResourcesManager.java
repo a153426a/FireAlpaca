@@ -50,8 +50,7 @@ public class ResourcesManager {
 	public ITextureRegion game_background_region;
 	public ITextureRegion stone_region;
 	public ITextureRegion breakable_region;
-	public ITextureRegion attackup_region;
-	public ITextureRegion healthup_region;
+	public ITextureRegion coin_region;
 	
 	public void loadMenuResources() { 
 		
@@ -85,8 +84,7 @@ public class ResourcesManager {
 		game_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "gamebackground.png");
 		stone_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "stone.png");
 		breakable_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "breakable.png");
-		attackup_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "attackup.png");
-		healthup_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "healthup.png");
+		coin_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "coin.png");
 		
 		try
 		{
