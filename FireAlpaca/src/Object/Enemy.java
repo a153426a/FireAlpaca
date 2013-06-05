@@ -20,9 +20,10 @@ public abstract class Enemy extends AnimatedSprite{
 	// see the the player is in range so the enemy can chase/shoot
 	private boolean inRange;
 	private Map[][] map;
+	private Player player;
 	
 	public Enemy(float pX, float pY, VertexBufferObjectManager vbo, Camera camera, PhysicsWorld physicsWorld, 
-			ITiledTextureRegion region, Map[][] map)
+			ITiledTextureRegion region, Map[][] map, Player player)
 	{	
 		super(pX, pY, region, vbo);	
 		String userData;
@@ -67,7 +68,7 @@ public abstract class Enemy extends AnimatedSprite{
 	//determine if the player is in range
 	private boolean checkRange () 
 	{
-		//TODO
+		
 		return true;
 	}
 	
