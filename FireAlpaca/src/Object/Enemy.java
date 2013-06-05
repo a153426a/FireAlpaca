@@ -61,8 +61,7 @@ public abstract class Enemy extends AnimatedSprite{
 			public void onUpdate(float pSecondsElapsed) 
 			{
 				super.onUpdate(pSecondsElapsed);
-				//TODO: enemy AI
-				enemy_AI(body);
+				enemy_move(body);
 				
 			}	
 		});
@@ -132,7 +131,7 @@ public abstract class Enemy extends AnimatedSprite{
 	}
 	
 	//enemy action update 
-	private void enemy_AI(Body body)
+	private void enemy_move(Body body)
 	{	
 		
 		if (checkRange()) 
@@ -142,9 +141,9 @@ public abstract class Enemy extends AnimatedSprite{
 			}
 	
 		}
-		if (enemy_collide()){
+		/*if (enemy_collide()){
 				//deal with collision
-		}
+		}*/
 		else {enemy_random_move(body);}
 	}
 	
