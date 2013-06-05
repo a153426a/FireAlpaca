@@ -18,6 +18,7 @@ public abstract class Player extends AnimatedSprite {
 	private Body body; 
 	public abstract void onDie();
 	private boolean canRun; 
+	private boolean stop;
 	
 	public Player(float pX, float pY, VertexBufferObjectManager vbo, Camera camera, PhysicsWorld physicsWorld) {
 		
@@ -40,12 +41,16 @@ public abstract class Player extends AnimatedSprite {
 	            super.onUpdate(pSecondsElapsed);
 	            camera.onUpdate(0.1f);
 	            
-	            if (getY() <= 0) {                    
+	            if (getY() <= 0 || getX() <=0) {                    
 	                onDie();
 	            } 
 	            
 	            if (canRun) {    
 	                body.setLinearVelocity(new Vector2(5, body.getLinearVelocity().y)); 
+	            }
+	            
+	            if (stop) { 
+	            	body.setLinearVelocity(new Vector2(0, 0)); 
 	            }
 	            
 	        }
@@ -64,6 +69,13 @@ public abstract class Player extends AnimatedSprite {
 	    
 	}
 	
+	public void stopRunning() { 
+		
+		canRun = false; 
+		stop = true;
+		
+	}
+	
 	public void jump()
 	{
 	    body.setLinearVelocity(new Vector2(body.getLinearVelocity().x, 12)); 
@@ -77,6 +89,12 @@ public abstract class Player extends AnimatedSprite {
 	protected float getLocationY()
 	{
 		return getY();
+	}
+	
+	public Body getBody() { 
+		
+		return body;
+		
 	}
 	
 }
