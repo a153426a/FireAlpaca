@@ -74,6 +74,13 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	private Player player;
 	private List<Enemy> enemyList;
 	
+	//Enum for enemy AI
+	public enum Map {
+		BREAKABLE, STONE, COIN, BASE, FLAG, ENEMY
+	}
+	//(gigantic?) matrix field for enemy AI.
+	public Map[][] map;
+	
 	private Text gameOverText;
 	private LevelCompleteWindow levelCompleteWindow;
 	private boolean gameOverDisplayed = false;
@@ -186,6 +193,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	            {
 	                levelObject = new Sprite(x, y, resourcesManager.stone_region, vbom); 
 	                PhysicsFactory.createBoxBody(physicsWorld, levelObject, BodyType.StaticBody, FIXTURE_DEF).setUserData("stone"); 
+	                map[(x-10)/20][(y-10)/20] = Map.STONE;
 	                
 	            } 
 	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BREAKABLE))
@@ -193,6 +201,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	                levelObject = new Sprite(x, y, resourcesManager.breakable_region, vbom);
 	                final Body body = PhysicsFactory.createBoxBody(physicsWorld, levelObject, BodyType.StaticBody, FIXTURE_DEF);
 	                body.setUserData("breakable");
+	                map[(x-10)/20][(y-10)/20] = Map.BREAKABLE;
 	            }
 	          
 	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_COIN))
@@ -214,6 +223,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	                    }
 	                };
 	                levelObject.registerEntityModifier(new LoopEntityModifier(new ScaleModifier(1, 1, 1.3f)));
+	                map[(x-10)/20][(y-10)/20] = Map.COIN;
 	            }
 	            
 	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLAYER))
@@ -249,6 +259,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	                    }
 	                };
 	                levelObject.registerEntityModifier(new LoopEntityModifier(new ScaleModifier(1, 1, 1.3f)));
+	                
 	            }
 	                     
 	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_RED_ENEMY))
@@ -261,9 +272,11 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
                             this.setVisible(false);
                             this.setIgnoreUpdate(true);
 	                    	enemyList.remove(this);
+	                    	map[(int) ((this.getX()-10)/20)][(int) ((this.getY()-10)/20)] = null;
 	                    }
 	                };
 	                enemyList.add((Enemy)levelObject);
+	                map[(x-10)/20][(y-10)/20] = Map.ENEMY;
 	            }
 	            
 	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BLUE_ENEMY))
@@ -276,9 +289,11 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
                             this.setVisible(false);
                             this.setIgnoreUpdate(true);
 	                    	enemyList.remove(this);
+	                    	map[(int) ((this.getX()-10)/20)][(int) ((this.getY()-10)/20)] = null;
 	                    }
 	                };
 	                enemyList.add((Enemy)levelObject);
+	                map[(x-10)/20][(y-10)/20] = Map.ENEMY;
 	            }
 	            
 	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_YELLOW_ENEMY))
@@ -291,9 +306,11 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
                             this.setVisible(false);
                             this.setIgnoreUpdate(true);
 	                    	enemyList.remove(this);
+	                    	map[(int) ((this.getX()-10)/20)][(int) ((this.getY()-10)/20)] = null;
 	                    }
 	                };
 	                enemyList.add((Enemy)levelObject);
+	                map[(x-10)/20][(y-10)/20] = Map.ENEMY;
 	            }
 	            
 	            else
