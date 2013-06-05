@@ -69,6 +69,15 @@ public abstract class Player extends AnimatedSprite {
 	    body.setLinearVelocity(new Vector2(body.getLinearVelocity().x, 12)); 
 	}
 
+	protected float getLocationX()
+	{
+		return getX();
+	}
+	
+	protected float getLocationY()
+	{
+		return getY();
+	}
 	
 }
 

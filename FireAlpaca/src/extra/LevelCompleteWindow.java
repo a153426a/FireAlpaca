@@ -23,15 +23,15 @@ import com.example.manager.ResourcesManager;
         
         public LevelCompleteWindow(VertexBufferObjectManager pSpriteVertexBufferObject)
         {
-            super(0, 0, 650, 400, ResourcesManager.getInstance().complete_window_region, pSpriteVertexBufferObject);
+            super(0, 0, 800, 480, ResourcesManager.getInstance().complete_window_region, pSpriteVertexBufferObject);
             attachStars(pSpriteVertexBufferObject);
         }
         
         private void attachStars(VertexBufferObjectManager pSpriteVertexBufferObject)
         {
             star1 = new TiledSprite(150, 150, ResourcesManager.getInstance().complete_stars_region, pSpriteVertexBufferObject);
-            star2 = new TiledSprite(325, 150, ResourcesManager.getInstance().complete_stars_region, pSpriteVertexBufferObject);
-            star3 = new TiledSprite(500, 150, ResourcesManager.getInstance().complete_stars_region, pSpriteVertexBufferObject);
+            star2 = new TiledSprite(400, 150, ResourcesManager.getInstance().complete_stars_region, pSpriteVertexBufferObject);
+            star3 = new TiledSprite(650, 150, ResourcesManager.getInstance().complete_stars_region, pSpriteVertexBufferObject);
             
             attachChild(star1);
             attachChild(star2);
