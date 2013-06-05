@@ -43,6 +43,9 @@ public abstract class Enemy extends AnimatedSprite{
 		createPhysics(camera, physicsWorld, userData);
 		this.map = map;
 		this.player = player;
+		final long[] ENEMY_ANIMATE = new long[] { 500, 500, 500 };
+	    animate(ENEMY_ANIMATE, 0, 2, true);
+		
 	}
 	
 	public abstract void onDie();
@@ -114,7 +117,7 @@ public abstract class Enemy extends AnimatedSprite{
 				}
 			}
 			else {
-				for (int y = player_y+1; y <enemy_x; y++){
+				for (int y = player_y+1; y <enemy_y; y++){
 					if (map[enemy_x][y] == Map.STONE) {
 						result = false;
 					}
@@ -154,11 +157,8 @@ public abstract class Enemy extends AnimatedSprite{
         
         XVelocity = (int)randomGenerator.nextGaussian();
         YVelocity = (int)randomGenerator.nextGaussian();
-        body.setLinearVelocity(new Vector2(XVelocity*2, YVelocity*2)); 
+        body.setLinearVelocity(new Vector2(XVelocity*3, YVelocity*3)); 
 
-    	final long[] ENEMY_ANIMATE = new long[] { 20, 20, 20 };
-	    animate(ENEMY_ANIMATE, 0, 2, true);
-		
 	}
 
 
