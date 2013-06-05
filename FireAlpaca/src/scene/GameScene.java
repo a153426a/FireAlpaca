@@ -264,7 +264,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	                     
 	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_RED_ENEMY))
 	            {
-	                levelObject = new Enemy(x, y, vbom, camera, physicsWorld, ResourcesManager.getInstance().red_enemy_region)
+	                levelObject = new Enemy(x, y, vbom, camera, physicsWorld, ResourcesManager.getInstance().red_enemy_region, map)
 	                {
 	                    @Override
 	                    public void onDie() {
@@ -281,7 +281,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	            
 	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BLUE_ENEMY))
 	            {
-	                levelObject = new Enemy(x, y, vbom, camera, physicsWorld, ResourcesManager.getInstance().blue_enemy_region)
+	                levelObject = new Enemy(x, y, vbom, camera, physicsWorld, ResourcesManager.getInstance().blue_enemy_region, map)
 	                {
 	                    @Override
 	                    public void onDie() {
@@ -298,7 +298,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	            
 	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_YELLOW_ENEMY))
 	            {
-	                levelObject = new Enemy(x, y, vbom, camera, physicsWorld, ResourcesManager.getInstance().yellow_enemy_region)
+	                levelObject = new Enemy(x, y, vbom, camera, physicsWorld, ResourcesManager.getInstance().yellow_enemy_region, map)
 	                {
 	                    @Override
 	                    public void onDie() {

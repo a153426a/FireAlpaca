@@ -8,6 +8,8 @@ import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
+import scene.GameScene.Map;
+
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.example.manager.ResourcesManager;
@@ -17,8 +19,10 @@ public abstract class Enemy extends AnimatedSprite{
 	private boolean canShoot;
 	// see the the player is in range so the enemy can chase/shoot
 	private boolean inRange;
+	private Map[][] map;
 	
-	public Enemy(float pX, float pY, VertexBufferObjectManager vbo, Camera camera, PhysicsWorld physicsWorld, ITiledTextureRegion region)
+	public Enemy(float pX, float pY, VertexBufferObjectManager vbo, Camera camera, PhysicsWorld physicsWorld, 
+			ITiledTextureRegion region, Map[][] map)
 	{	
 		super(pX, pY, region, vbo);	
 		String userData;
@@ -36,6 +40,7 @@ public abstract class Enemy extends AnimatedSprite{
 			userData = "yellowEnemy";
 			health = 3;}
 		createPhysics(camera, physicsWorld, userData);
+		this.map = map;
 	}
 	
 	public abstract void onDie();
