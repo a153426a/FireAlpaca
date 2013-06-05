@@ -1,6 +1,8 @@
 package scene;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.hud.HUD;
@@ -27,6 +29,7 @@ import org.andengine.util.level.simple.SimpleLevelEntityLoaderData;
 import org.andengine.util.level.simple.SimpleLevelLoader;
 import org.xml.sax.Attributes;
 
+import Object.Enemy;
 import Object.Player;
 
 import com.badlogic.gdx.math.Vector2;
@@ -39,6 +42,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.example.base.BaseScene;
+import com.example.manager.ResourcesManager;
 import com.example.manager.SceneManager;
 import com.example.manager.SceneManager.SceneType;
 
@@ -64,7 +68,11 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_COIN = "coin";	
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLAYER = "player"; 
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_LEVEL_COMPLETE = "levelComplete";
+	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BLUE_ENEMY = "blueEnemy";
+	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_RED_ENEMY = "redEnemy";
+	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_YELLOW_ENEMY = "yellowEnemy";
 	private Player player;
+	private List<Enemy> enemyList;
 	
 	private Text gameOverText;
 	private LevelCompleteWindow levelCompleteWindow;
@@ -72,7 +80,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
 	@Override
 	public void createScene() {
-		
+		enemyList = new ArrayList<Enemy>();
 		createBackground(); 
 		createHUD(); 
 		createPhysics(); 
@@ -244,6 +252,51 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	                levelObject.registerEntityModifier(new LoopEntityModifier(new ScaleModifier(1, 1, 1.3f)));
 	            }
 	                     
+	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_RED_ENEMY))
+	            {
+	                levelObject = new Enemy(x, y, vbom, camera, physicsWorld, ResourcesManager.getInstance().red_enemy_region)
+	                {
+	                    @Override
+	                    public void onDie() {
+	                    	addToScore(100);
+                            this.setVisible(false);
+                            this.setIgnoreUpdate(true);
+	                    	enemyList.remove(this);
+	                    }
+	                };
+	                enemyList.add((Enemy)levelObject);
+	            }
+	            
+	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BLUE_ENEMY))
+	            {
+	                levelObject = new Enemy(x, y, vbom, camera, physicsWorld, ResourcesManager.getInstance().blue_enemy_region)
+	                {
+	                    @Override
+	                    public void onDie() {
+	                    	addToScore(30);
+                            this.setVisible(false);
+                            this.setIgnoreUpdate(true);
+	                    	enemyList.remove(this);
+	                    }
+	                };
+	                enemyList.add((Enemy)levelObject);
+	            }
+	            
+	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_YELLOW_ENEMY))
+	            {
+	                levelObject = new Enemy(x, y, vbom, camera, physicsWorld, ResourcesManager.getInstance().yellow_enemy_region)
+	                {
+	                    @Override
+	                    public void onDie() {
+	                    	addToScore(50);
+                            this.setVisible(false);
+                            this.setIgnoreUpdate(true);
+	                    	enemyList.remove(this);
+	                    }
+	                };
+	                enemyList.add((Enemy)levelObject);
+	            }
+	            
 	            else
 	            {
 	                throw new IllegalArgumentException();
@@ -321,13 +374,28 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	                    }
 	                }));
 	            }
-
+	            
+	            
+	            else if ((x1.getBody().getUserData().equals("blueEnemy")||
+	            		x1.getBody().getUserData().equals("redEnemy")||x1.getBody().getUserData().equals("yellowEnemy"))
+	            		&& x2.getBody().getUserData().equals("player"))
+	            {
+	            	player.onDie();
+	            }
+	            
 	            if (x1.getBody().getUserData() != null && x2.getBody().getUserData() != null)
 	            {
 	                if (x2.getBody().getUserData().equals("player"))
 	                {
 	                    //TODO;
 	                }
+	            }
+	            
+	            if ((x1.getBody().getUserData().equals("blueEnemy")||
+	            		x1.getBody().getUserData().equals("redEnemy")||x1.getBody().getUserData().equals("yellowEnemy"))
+	            		&& x2.getBody().getUserData().equals("player"))
+	            {
+	            	player.onDie();
 	            }
 	            
 	        }

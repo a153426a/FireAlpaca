@@ -5,6 +5,7 @@
     <entity x="300" y="100" type="breakable"/>
     <entity x="200" y="100" type="coin"/>
     <entity x="500" y="400" type="coin"/>
+    <entity x="100" y="60" type = "blueEnemy"/>
     <entity x="60"  y="60" type ="player"/>
     <entity x="750" y="60" type = "levelComplete"/>
 </level>
