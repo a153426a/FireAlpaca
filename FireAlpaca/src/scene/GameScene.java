@@ -223,10 +223,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	                    @Override
 	                    public void onDie() {
 	                    	if (!gameOverDisplayed) {
-	                    		
+	                    		this.stopRunning();
 	                            displayGameOverText();
 	                        }
-	                    	
 	                    }
 	                };
 	                levelObject = player;
