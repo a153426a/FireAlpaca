@@ -6,6 +6,9 @@ import java.util.List;
 
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.hud.HUD;
+import org.andengine.engine.camera.hud.controls.AnalogOnScreenControl;
+import org.andengine.engine.camera.hud.controls.AnalogOnScreenControl.IAnalogOnScreenControlListener;
+import org.andengine.engine.camera.hud.controls.BaseOnScreenControl;
 import org.andengine.engine.handler.timer.ITimerCallback;
 import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.entity.IEntity;
@@ -32,6 +35,8 @@ import org.xml.sax.Attributes;
 import Object.Enemy;
 import Object.Player;
 
+import android.opengl.GLES20;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -51,7 +56,7 @@ import extra.LevelCompleteWindow.StarsCount;
 
 public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	
-	private HUD gameHUD; 
+	private HUD gameHUD;
 	private PhysicsWorld physicsWorld; 
 	private Text scoreText; 
 	private int score = 0; 
@@ -84,19 +89,47 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	private Text gameOverText;
 	private LevelCompleteWindow levelCompleteWindow;
 	private boolean gameOverDisplayed = false;
+	
+	
+	//analog on screen control
+	private AnalogOnScreenControl analogControl;
+	
 
 	@Override
 	public void createScene() {
 		enemyList = new ArrayList<Enemy>();
 		map = new Map[40][24];
 		createBackground(); 
+		createControl();
 		createHUD(); 
 		createPhysics(); 
 		loadLevel(1);
 		setOnSceneTouchListener(this);
 		createGameOverText();
 		levelCompleteWindow = new LevelCompleteWindow(vbom);
+	}
+	
+	
+	public void createControl() {
+	analogControl = new AnalogOnScreenControl(68, 68, 
+				camera,ResourcesManager.getInstance().analog_base_region, ResourcesManager.getInstance().analog_knob_region, 0.1f, 200,
+				vbom, new IAnalogOnScreenControlListener(){
+			@Override
+			public void onControlChange(final BaseOnScreenControl pBaseOnScreenControl, final float pValueX, final float pValueY){
+				player.getBody().setLinearVelocity(pValueX*2,  pValueY * 2);
+			}
+			
+			@Override
+			public void onControlClick(final AnalogOnScreenControl pAnalogOnScreenControl) {
+			}
+		});
 		
+		analogControl.getControlBase().setBlendFunction(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		analogControl.getControlBase().setAlpha(0.5f);
+		analogControl.getControlBase().setScaleCenter(0, 128);
+		analogControl.refreshControlKnobPosition();
+
+		setChildScene(analogControl);		
 	}
 
 	@Override
@@ -142,7 +175,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	    scoreText.setAnchorCenter(0, 0);    
 	    scoreText.setText("Score: 0");
 	    gameHUD.attachChild(scoreText);
-		
 		camera.setHUD(gameHUD); 
 		
 	} 
@@ -234,7 +266,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	                    @Override
 	                    public void onDie() {
 	                    	if (!gameOverDisplayed) {
-	                    		this.stopRunning();
+	                            //physicsWorld.unregisterPhysicsConnector(physicsConnector);
+	                            player.getBody().setActive(false);
 	                            displayGameOverText();
 	                        }
 	                    }
@@ -331,7 +364,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	@Override
 	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
 		
-		if (pSceneTouchEvent.isActionDown()) {
+		/*if (pSceneTouchEvent.isActionDown()) {
 			
 	        if (!firstTouch) {
 	        	
@@ -344,7 +377,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	            
 	        }
 	        
-	    }
+	    }*/
 		
 	    return false;
 	    
@@ -408,9 +441,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	                }
 	            }
 	            
-	            if ((x1.getBody().getUserData().equals("blueEnemy")||
-	            		x1.getBody().getUserData().equals("redEnemy")||x1.getBody().getUserData().equals("yellowEnemy"))
-	            		&& x2.getBody().getUserData().equals("player"))
+	            if ((x2.getBody().getUserData().equals("blueEnemy")||
+	            		x2.getBody().getUserData().equals("redEnemy")||x2.getBody().getUserData().equals("yellowEnemy"))
+	            		&& x1.getBody().getUserData().equals("player"))
 	            {
 	            	player.onDie();
 	            }
@@ -447,6 +480,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	    };
 	    return contactListener;
 	}
+
+
+
 	
 }
 

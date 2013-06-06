@@ -15,6 +15,7 @@ import org.andengine.opengl.texture.atlas.buildable.builder.BlackPawnTextureAtla
 import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder.TextureAtlasBuilderException;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
+import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.debug.Debug;
 
@@ -64,6 +65,12 @@ public class ResourcesManager {
 	public ITiledTextureRegion blue_enemy_region;
 	public ITiledTextureRegion yellow_enemy_region;
 	
+	
+	//on screen analog control
+	public BitmapTextureAtlas analogControlTextureAtlas;
+	public ITextureRegion analog_base_region;
+	public ITextureRegion analog_knob_region;
+	
 	public void loadMenuResources() { 
 		
 		loadMenuGraphics(); 
@@ -106,11 +113,20 @@ public class ResourcesManager {
 
 		complete_window_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "levelComplete.png");
 		complete_stars_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "star.png", 2, 1);
-
+		
+		//analog control 
+		analogControlTextureAtlas = new BitmapTextureAtlas(activity.getTextureManager(), 256, 128, TextureOptions.BILINEAR);
+		analog_base_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(analogControlTextureAtlas, activity, "analog_base.png", 0, 0);
+		analog_knob_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(analogControlTextureAtlas, activity, "analog_knob.png", 128, 0);
+		
+		
 		try
 		{
 			this.gameTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0,1,0));
 			this.gameTextureAtlas.load();
+			
+			//analog control
+			this.analogControlTextureAtlas.load();
 		}
 		catch(final TextureAtlasBuilderException e)
 		{

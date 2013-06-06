@@ -157,6 +157,7 @@ public abstract class Enemy extends AnimatedSprite{
         XVelocity = (int)randomGenerator.nextGaussian();
         YVelocity = (int)randomGenerator.nextGaussian();
         body.setLinearVelocity(new Vector2(XVelocity*3, YVelocity*3)); 
+        
 
 	}
 
