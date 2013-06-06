@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <level width="800" height="480">    
 	<entity x="30"  y="30" type ="player"/>
-	<entity x="770"  y="30" type ="player"/>
+	<entity x="770"  y="30" type ="flag"/>
 	<!-- Frame -->
 	<entity x="10" y="10" type="stone"/>
 	<entity x="30" y="10" type="stone"/>

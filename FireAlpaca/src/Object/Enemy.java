@@ -167,6 +167,10 @@ public abstract class Enemy extends AnimatedSprite{
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	public Body get_body() {
+		return body;
+	}
 
 
 	

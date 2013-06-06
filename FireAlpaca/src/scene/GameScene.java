@@ -2,6 +2,8 @@ package scene;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.andengine.engine.camera.Camera;
@@ -32,9 +34,10 @@ import org.andengine.util.level.simple.SimpleLevelEntityLoaderData;
 import org.andengine.util.level.simple.SimpleLevelLoader;
 import org.xml.sax.Attributes;
 
+import Object.Bullet;
+import Object.BulletPool;
 import Object.Enemy;
 import Object.Player;
-
 import android.opengl.GLES20;
 
 import com.badlogic.gdx.math.Vector2;
@@ -60,7 +63,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	private PhysicsWorld physicsWorld; 
 	private Text scoreText; 
 	private int score = 0; 
-	private boolean firstTouch = false;
 	
 	//game graphic fields
 	private static final String TAG_ENTITY = "entity";
@@ -76,12 +78,16 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BLUE_ENEMY = "blueEnemy";
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_RED_ENEMY = "redEnemy";
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_YELLOW_ENEMY = "yellowEnemy";
+	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BASE = "base"; 
+	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_FLAG = "flag"; 
 	private Player player;
+	public LinkedList<Bullet> bulletList; 
+	public int bulletCount; 
 	private List<Enemy> enemyList;
 	
 	//Enum for enemy AI
 	public enum Map {
-		BREAKABLE, STONE, COIN, BASE, FLAG, ENEMY
+		BREAKABLE, STONE, COIN, BASE, FLAG, ENEMY, EMPTY
 	}
 	//(gigantic?) matrix field for enemy AI.
 	public Map[][] map;
@@ -99,6 +105,11 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	public void createScene() {
 		enemyList = new ArrayList<Enemy>();
 		map = new Map[40][24];
+		for(int i=0; i<39; i++) {
+			for(int j=0; j<23; j++) { 
+				map[i][j] = Map.EMPTY;
+			}
+		}
 		createBackground(); 
 		createControl();
 		createHUD(); 
@@ -106,7 +117,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 		loadLevel(1);
 		setOnSceneTouchListener(this);
 		createGameOverText();
-		levelCompleteWindow = new LevelCompleteWindow(vbom);
+		levelCompleteWindow = new LevelCompleteWindow(vbom); 
+		bulletList = new LinkedList<Bullet>(); 
 	}
 	
 	
@@ -117,10 +129,24 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 			@Override
 			public void onControlChange(final BaseOnScreenControl pBaseOnScreenControl, final float pValueX, final float pValueY){
 				player.getBody().setLinearVelocity(pValueX*2,  pValueY * 2);
+				float px = pValueX*pValueX; 
+				float py = pValueY*pValueY;
+				if(pValueX >0 && pValueY >0) { 
+					player.shoot(px/(px+py), py/(px+py));
+				} else if (pValueX >0 && pValueY<0) { 
+					player.shoot(px/(px+py), -py/(px+py));
+				} else if (pValueX <0 && pValueY<0) {
+					player.shoot(-px/(px+py), -py/(px+py));
+				} else if (pValueX<0 && pValueY>0) { 
+					player.shoot(-px/(px+py), py/(px+py));
+				}
+				clean();
+				
 			}
 			
 			@Override
 			public void onControlClick(final AnalogOnScreenControl pAnalogOnScreenControl) {
+				
 			}
 		});
 		
@@ -236,6 +262,18 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	                body.setUserData("breakable");
 	                map[(x-10)/20][(y-10)/20] = Map.BREAKABLE;
 	            }
+	            
+	            else if(type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BASE)) { 
+	            	levelObject = new Sprite(x, y, resourcesManager.base_region, vbom); 
+	            	PhysicsFactory.createBoxBody(physicsWorld, levelObject, BodyType.StaticBody, FIXTURE_DEF).setUserData("base"); 
+	            	//TODO
+	            }
+	            
+	            else if(type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_FLAG)) { 
+	            	levelObject = new Sprite(x, y, resourcesManager.flag_region, vbom); 
+	            	PhysicsFactory.createBoxBody(physicsWorld, levelObject, BodyType.StaticBody, FIXTURE_DEF).setUserData("flag"); 
+	            	//TODO
+	            }
 	          
 	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_COIN))
 	            {
@@ -263,6 +301,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	            {
 	                player = new Player(x, y, vbom, camera, physicsWorld)
 	                {
+	                	//TODO
 	                    @Override
 	                    public void onDie() {
 	                    	if (!gameOverDisplayed) {
@@ -271,6 +310,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	                            displayGameOverText();
 	                        }
 	                    }
+	                    
 	                };
 	                levelObject = player;
 	            }
@@ -303,6 +343,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	                    @Override
 	                    public void onDie() {
 	                    	addToScore(100);
+	                    	this.get_body().setActive(false);
                             this.setVisible(false);
                             this.setIgnoreUpdate(true);
 	                    	enemyList.remove(this);
@@ -345,7 +386,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	                };
 	                enemyList.add((Enemy)levelObject);
 	                map[(x-10)/20][(y-10)/20] = Map.ENEMY;
-	            }
+	            } 
 	            
 	            else
 	            {
@@ -364,20 +405,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	@Override
 	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
 		
-		/*if (pSceneTouchEvent.isActionDown()) {
-			
-	        if (!firstTouch) {
-	        	
-	            player.setRunning();
-	            firstTouch = true;
-	            
-	        } else {
-	        	
-	            player.jump();
-	            
-	        }
+		if (pSceneTouchEvent.isActionDown()) {
 	        
-	    }*/
+	    }
 		
 	    return false;
 	    
@@ -426,26 +456,29 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	            }
 	            
 	            
-	            else if ((x1.getBody().getUserData().equals("blueEnemy")||
+	            if ((x1.getBody().getUserData().equals("blueEnemy")||
 	            		x1.getBody().getUserData().equals("redEnemy")||x1.getBody().getUserData().equals("yellowEnemy"))
 	            		&& x2.getBody().getUserData().equals("player"))
 	            {
 	            	player.onDie();
 	            }
 	            
-	            if (x1.getBody().getUserData() != null && x2.getBody().getUserData() != null)
-	            {
-	                if (x2.getBody().getUserData().equals("player"))
-	                {
-	                    //TODO;
-	                }
-	            }
 	            
 	            if ((x2.getBody().getUserData().equals("blueEnemy")||
 	            		x2.getBody().getUserData().equals("redEnemy")||x2.getBody().getUserData().equals("yellowEnemy"))
 	            		&& x1.getBody().getUserData().equals("player"))
 	            {
 	            	player.onDie();
+	            }
+	            
+	            if(x2.getBody().getUserData().equals("bullet") && x1.getBody().equals("stone")) {
+	            	player.onDie();
+	            }
+	            
+	            
+	            if (x1.getBody().getUserData() != null && x2.getBody().getUserData() != null)
+	            {
+	                
 	            }
 	            
 	        }
@@ -480,9 +513,58 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	    };
 	    return contactListener;
 	}
-
-
-
 	
+	public void clean() {
+		Iterator<Bullet> it = bulletList.iterator(); 
+		while(it.hasNext()) { 
+			Bullet b = (Bullet) it.next(); 
+			int mapX = (int) ((b.sprite.getX()-2)/20);
+			int mapY = (int) ((b.sprite.getY()-2)/20); 
+			if(b.sprite.getX()<=0 || b.sprite.getX()>=800 || b.sprite.getY()>=480 || b.sprite.getY()<=0) {
+				BulletPool.shareBulletPool().recyclePoolItem(b); 
+				it.remove(); 
+				continue; 
+			}
+			
+			if(map[mapX][mapY] != Map.EMPTY) { 
+				BulletPool.shareBulletPool().recyclePoolItem(b); 
+				it.remove();
+				continue; 
+			}
+			
+			if(map[mapX][mapY] == Map.BREAKABLE) { 
+				//TODO remove breakable
+				map[mapX][mapY] = Map.EMPTY; 
+				addToScore(10);
+				continue; 
+			}
+			
+			if(map[mapX][mapY] == Map.ENEMY) { 
+				map[mapX][mapY] = Map.EMPTY;
+				find_enemy(mapX, mapY).onDie();
+				
+			}
+			
+		}
+	}
+	
+	
+	private Enemy find_enemy(int x, int y) {
+		
+		int xMin = x*20+10; 
+		int xMax = x*20+30; 
+		int yMin = y*20+10; 
+		int yMax = y*20+30; 
+		Enemy result = null;
+		
+		for(int i=0; i<enemyList.size(); i++) { 
+			if(enemyList.get(i).getX()>=xMin && enemyList.get(i).getX()<=xMax && enemyList.get(i).getY()>=yMin && enemyList.get(i).getY()<=yMax) {
+				result = enemyList.get(i);
+			}
+		}
+		return result;
+	}
+	
+
 }
 

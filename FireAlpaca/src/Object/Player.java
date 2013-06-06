@@ -1,16 +1,21 @@
 package Object;
 
 import org.andengine.engine.camera.Camera;
+import org.andengine.entity.modifier.MoveModifier;
+import org.andengine.entity.modifier.MoveXModifier;
+import org.andengine.entity.modifier.MoveYModifier;
 import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
-import com.badlogic.gdx.math.Vector2;
+import scene.GameScene;
+
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.example.manager.ResourcesManager;
+import com.example.manager.SceneManager;
 
 
 public abstract class Player extends AnimatedSprite {
@@ -63,6 +68,23 @@ public abstract class Player extends AnimatedSprite {
 	public Body getBody() { 
 		
 		return body;
+		
+	} 
+	
+	public void shoot(float x, float y) {
+		
+		GameScene scene = (GameScene) SceneManager.getInstance().getCurrentScene(); 
+		
+		Bullet b = BulletPool.shareBulletPool().obtainPoolItem(); 
+		b.sprite.setPosition(getX(), getY()); 
+		MoveModifier mod = new MoveModifier(10, b.sprite.getX(), b.sprite.getY(), b.sprite.getX()+2000*x, b.sprite.getY()+2000*y); 
+		
+		b.sprite.setVisible(true); 
+		b.sprite.detachSelf(); 
+		scene.attachChild(b.sprite); 
+		scene.bulletList.add(b); 
+		b.sprite.registerEntityModifier(mod);
+		scene.bulletCount++;
 		
 	}
 	

@@ -55,6 +55,8 @@ public class ResourcesManager {
 	public ITextureRegion breakable_region;
 	public ITextureRegion coin_region;
 	public ITextureRegion complete_window_region;
+	public ITextureRegion base_region; 
+	public ITextureRegion flag_region;
 	
 	//player region 
 	public ITiledTextureRegion player_region;
@@ -70,6 +72,7 @@ public class ResourcesManager {
 	public BitmapTextureAtlas analogControlTextureAtlas;
 	public ITextureRegion analog_base_region;
 	public ITextureRegion analog_knob_region;
+	
 	
 	public void loadMenuResources() { 
 		
@@ -105,7 +108,10 @@ public class ResourcesManager {
 		breakable_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "breakable.png");
 		coin_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "coin.png");
 		player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "player.png", 3, 1); 
-
+		base_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "base.png");
+		flag_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "flag.png");
+		
+		
 		red_enemy_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "red_enemy.png", 3, 1); 
 		blue_enemy_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "blue_enemy.png", 3, 1);
 		yellow_enemy_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "yellow_enemy.png", 3, 1); 
@@ -118,6 +124,7 @@ public class ResourcesManager {
 		analogControlTextureAtlas = new BitmapTextureAtlas(activity.getTextureManager(), 256, 128, TextureOptions.BILINEAR);
 		analog_base_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(analogControlTextureAtlas, activity, "analog_base.png", 0, 0);
 		analog_knob_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(analogControlTextureAtlas, activity, "analog_knob.png", 128, 0);
+		
 		
 		
 		try
