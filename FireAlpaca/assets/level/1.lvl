@@ -241,7 +241,7 @@
 	<entity x="250" y="170" type="coin"/>
     <entity x="250" y="310" type="coin"/>
     <entity x="550" y="310" type="coin"/>
-    <entity x="550" y="410" type="coin"/>
+    <entity x="550" y="170" type="coin"/>
     
     <entity x="750" y="60" type = "levelComplete"/>
 </level>

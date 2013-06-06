@@ -88,6 +88,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	@Override
 	public void createScene() {
 		enemyList = new ArrayList<Enemy>();
+		map = new Map[40][24];
 		createBackground(); 
 		createHUD(); 
 		createPhysics(); 
