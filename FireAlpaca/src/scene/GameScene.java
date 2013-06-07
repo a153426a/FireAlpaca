@@ -64,6 +64,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	private Text scoreText;
 	private int score = 0;
 	private boolean isLevelComplete = false;
+	private boolean firstTouch = false;
 	private int level = 1;
 
 	// game graphic fields
@@ -96,6 +97,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	public Map[][] map;
 
 	private Text gameOverText;
+	private Text intro;
 	private LevelCompleteWindow levelCompleteWindow;
 	private boolean gameOverDisplayed = false;
 
@@ -118,8 +120,36 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 		loadLevel(level);
 		setOnSceneTouchListener(this);
 		createGameOverText();
+		createIntro();
+		displayIntroText();
 		levelCompleteWindow = new LevelCompleteWindow(vbom);
 		bulletList = new LinkedList<Bullet>();
+	}
+
+	private void createIntro() {
+
+		if (level == 1 || level == 5) {
+			intro = new Text(0, 0, resourcesManager.font,
+					"Destory all enemy! ", vbom);
+		} else if (level == 2 || level == 6) {
+			intro = new Text(0, 0, resourcesManager.font, "Protect the base! ",
+					vbom);
+		} else if (level == 3 || level == 7) {
+			intro = new Text(0, 0, resourcesManager.font,
+					"Reach the extraction flag! ", vbom);
+		} else if (level == 4) {
+			intro = new Text(0, 0, resourcesManager.font,
+					"Survive for 20 seconds!  ", vbom);
+		} else {
+			intro = new Text(0, 0, resourcesManager.font,
+					"Kill the Final Boss! ", vbom);
+		}
+
+	}
+
+	private void displayIntroText() {
+		intro.setPosition(camera.getCenterX(), camera.getCenterY());
+		attachChild(intro);
 	}
 
 	public void createControl() {
@@ -378,7 +408,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 							levelObject = new Enemy(x, y, vbom, camera,
 									physicsWorld, ResourcesManager
 											.getInstance().red_enemy_region,
-									player) {
+									player, level) {
 								@Override
 								public void onDie() {
 									addToScore(100);
@@ -399,7 +429,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 							levelObject = new Enemy(x, y, vbom, camera,
 									physicsWorld, ResourcesManager
 											.getInstance().blue_enemy_region,
-									player) {
+									player, level) {
 								@Override
 								public void onDie() {
 									addToScore(30);
@@ -419,7 +449,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 							levelObject = new Enemy(x, y, vbom, camera,
 									physicsWorld, ResourcesManager
 											.getInstance().yellow_enemy_region,
-									player) {
+									player, level) {
 								@Override
 								public void onDie() {
 									addToScore(50);
@@ -451,12 +481,27 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	@Override
 	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
 
-		if (pSceneTouchEvent.isActionDown() && isLevelComplete) {
-			if (level != 8) {
-				level++;
+		if (!firstTouch) {
+
+			intro.setVisible(false);
+			intro.detachSelf();
+			firstTouch = true;
+
+		} else {
+
+			if (level == 4 && gameOverDisplayed) {
 				SceneManager.getInstance().loadGameScene(engine);
-			} else {
-				SceneManager.getInstance().loadMenuScene(engine);
+			}
+
+			if (pSceneTouchEvent.isActionDown() && isLevelComplete) {
+
+				if (level != 8) {
+					level++;
+					SceneManager.getInstance().loadGameScene(engine);
+				} else {
+					SceneManager.getInstance().loadMenuScene(engine);
+				}
+
 			}
 		}
 
