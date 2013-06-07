@@ -10,20 +10,21 @@ import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
+import scene.GameScene;
 import scene.GameScene.Map;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.example.manager.ResourcesManager;
+import com.example.manager.SceneManager;
 public abstract class Enemy extends AnimatedSprite{
 	private Body body;
 	private float health;
-	private Map[][] map;
+	private int x, y;
 	private Player player;
-	
 	public Enemy(float pX, float pY, VertexBufferObjectManager vbo, Camera camera, PhysicsWorld physicsWorld, 
-			ITiledTextureRegion region, Map[][] map, Player player)
+			ITiledTextureRegion region, Player player)
 	{	
 		super(pX, pY, region, vbo);	
 		String userData;
@@ -41,10 +42,11 @@ public abstract class Enemy extends AnimatedSprite{
 			userData = "yellowEnemy";
 			health = 3;}
 		createPhysics(camera, physicsWorld, userData);
-		this.map = map;
 		this.player = player;
 		final long[] ENEMY_ANIMATE = new long[] { 500, 500, 500 };
 	    animate(ENEMY_ANIMATE, 0, 2, true);
+	    this.x = (int) (pX-10)/20;
+	    this.y = (int) (pY-10)/20;
 		
 	}
 	
@@ -62,6 +64,13 @@ public abstract class Enemy extends AnimatedSprite{
 			{
 				super.onUpdate(pSecondsElapsed);
 				enemy_move(body);
+				if ((int)(getX()-10)/20 !=x || (int)(getY()-10)/20 != y) {
+					GameScene scene = (GameScene) SceneManager.getInstance().getCurrentScene();
+					scene.map[x][y] = Map.EMPTY;
+					x = (int)(getX()-10)/20;
+					y = (int)(getY()-10)/20;
+					scene.map[x][y] = Map.ENEMY;
+				}
 				
 			}	
 		});
@@ -78,6 +87,7 @@ public abstract class Enemy extends AnimatedSprite{
 	//determine if the enemy is close enough to start shooting
 	private boolean checkShoot()
 	{	
+		GameScene scene = (GameScene) SceneManager.getInstance().getCurrentScene();
 		boolean result = true;
 		int player_x = (int)(player.getX()-10)/20;
 		int player_y = (int)(player.getY()-10)/20;
@@ -93,14 +103,14 @@ public abstract class Enemy extends AnimatedSprite{
 		else if (y_distance == 0) {
 			if (player_x > enemy_x) {
 				for (int x = enemy_x+1; x <player_x; x++){
-					if (map[x][enemy_y] == Map.STONE) {
+					if (scene.map[x][enemy_y] == Map.STONE) {
 						result = false;
 					}
 				}	
 			}
 			else {
 				for (int x = player_x+1; x <enemy_x; x++){
-					if (map[x][enemy_y] == Map.STONE) {
+					if (scene.map[x][enemy_y] == Map.STONE) {
 						result = false;
 					}
 				}	
@@ -110,14 +120,14 @@ public abstract class Enemy extends AnimatedSprite{
 		else if (x_distance ==0) {
 			if (player_y > enemy_y) {
 				for (int y = enemy_y+1; y <player_y; y++){
-					if (map[enemy_x][y] == Map.STONE) {
+					if (scene.map[enemy_x][y] == Map.STONE) {
 						result = false;
 					}
 				}
 			}
 			else {
 				for (int y = player_y+1; y <enemy_y; y++){
-					if (map[enemy_x][y] == Map.STONE) {
+					if (scene.map[enemy_x][y] == Map.STONE) {
 						result = false;
 					}
 				}	

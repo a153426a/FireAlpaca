@@ -57,6 +57,7 @@ public class ResourcesManager {
 	public ITextureRegion complete_window_region;
 	public ITextureRegion base_region; 
 	public ITextureRegion flag_region;
+	public ITextureRegion bullet_region;
 	
 	//player region 
 	public ITiledTextureRegion player_region;
@@ -110,7 +111,7 @@ public class ResourcesManager {
 		player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "player.png", 3, 1); 
 		base_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "base.png");
 		flag_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "flag.png");
-		
+		bullet_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "bullet.png");
 		
 		red_enemy_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "red_enemy.png", 3, 1); 
 		blue_enemy_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "blue_enemy.png", 3, 1);

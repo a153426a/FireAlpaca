@@ -22,6 +22,7 @@ public abstract class Player extends AnimatedSprite {
 	
 	private Body body; 
 	public abstract void onDie();
+
 	
 	public Player(float pX, float pY, VertexBufferObjectManager vbo, Camera camera, PhysicsWorld physicsWorld) {
 		
@@ -71,9 +72,8 @@ public abstract class Player extends AnimatedSprite {
 		
 	} 
 	
-	public void shoot(float x, float y) {
-		
-		GameScene scene = (GameScene) SceneManager.getInstance().getCurrentScene(); 
+	
+		/*GameScene scene = (GameScene) SceneManager.getInstance().getCurrentScene(); 
 		
 		Bullet b = BulletPool.shareBulletPool().obtainPoolItem(); 
 		b.sprite.setPosition(getX(), getY()); 
@@ -83,10 +83,10 @@ public abstract class Player extends AnimatedSprite {
 		b.sprite.detachSelf(); 
 		scene.attachChild(b.sprite); 
 		scene.bulletList.add(b); 
-		b.sprite.registerEntityModifier(mod);
-		scene.bulletCount++;
+		b.sprite.registerEntityModifier(mod); 
 		
-	}
+		scene.bulletCount++;*/
+		
 	
 }
 

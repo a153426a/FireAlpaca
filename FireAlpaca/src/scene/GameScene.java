@@ -35,7 +35,6 @@ import org.andengine.util.level.simple.SimpleLevelLoader;
 import org.xml.sax.Attributes;
 
 import Object.Bullet;
-import Object.BulletPool;
 import Object.Enemy;
 import Object.Player;
 import android.opengl.GLES20;
@@ -54,6 +53,7 @@ import com.example.manager.ResourcesManager;
 import com.example.manager.SceneManager;
 import com.example.manager.SceneManager.SceneType;
 
+import extra.CoolDown;
 import extra.LevelCompleteWindow;
 import extra.LevelCompleteWindow.StarsCount;
 
@@ -129,18 +129,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 			@Override
 			public void onControlChange(final BaseOnScreenControl pBaseOnScreenControl, final float pValueX, final float pValueY){
 				player.getBody().setLinearVelocity(pValueX*2,  pValueY * 2);
-				float px = pValueX*pValueX; 
-				float py = pValueY*pValueY;
-				if(pValueX >0 && pValueY >0) { 
-					player.shoot(px/(px+py), py/(px+py));
-				} else if (pValueX >0 && pValueY<0) { 
-					player.shoot(px/(px+py), -py/(px+py));
-				} else if (pValueX <0 && pValueY<0) {
-					player.shoot(-px/(px+py), -py/(px+py));
-				} else if (pValueX<0 && pValueY>0) { 
-					player.shoot(-px/(px+py), py/(px+py));
-				}
-				clean();
+				if (pValueX != 0 && pValueY != 0 && CoolDown.getSharedInstance().checkValidity())
+			 {
+				player_shoot(pValueX, pValueY); }
+				//clean();
 				
 			}
 			
@@ -338,7 +330,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	                     
 	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_RED_ENEMY))
 	            {
-	                levelObject = new Enemy(x, y, vbom, camera, physicsWorld, ResourcesManager.getInstance().red_enemy_region, map, player)
+	                levelObject = new Enemy(x, y, vbom, camera, physicsWorld, ResourcesManager.getInstance().red_enemy_region,player)
 	                {
 	                    @Override
 	                    public void onDie() {
@@ -356,7 +348,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	            
 	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BLUE_ENEMY))
 	            {
-	                levelObject = new Enemy(x, y, vbom, camera, physicsWorld, ResourcesManager.getInstance().blue_enemy_region, map, player)
+	                levelObject = new Enemy(x, y, vbom, camera, physicsWorld, ResourcesManager.getInstance().blue_enemy_region,player)
 	                {
 	                    @Override
 	                    public void onDie() {
@@ -373,7 +365,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	            
 	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_YELLOW_ENEMY))
 	            {
-	                levelObject = new Enemy(x, y, vbom, camera, physicsWorld, ResourcesManager.getInstance().yellow_enemy_region, map, player)
+	                levelObject = new Enemy(x, y, vbom, camera, physicsWorld, ResourcesManager.getInstance().yellow_enemy_region, player)
 	                {
 	                    @Override
 	                    public void onDie() {
@@ -514,8 +506,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	    return contactListener;
 	}
 	
-	public void clean() {
+	/*public void clean() {
 		Iterator<Bullet> it = bulletList.iterator(); 
+		
 		while(it.hasNext()) { 
 			Bullet b = (Bullet) it.next(); 
 			int mapX = (int) ((b.sprite.getX()-2)/20);
@@ -546,7 +539,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 			}
 			
 		}
-	}
+	}*/
 	
 	
 	private Enemy find_enemy(int x, int y) {
@@ -566,5 +559,36 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	}
 	
 
+public void player_shoot(float x, float y) {
+		
+		float xVel, yVel;
+		int a,b;
+		float px = x*x; 
+		float py = y*y;
+		if(x >0 && y >0) { 
+			xVel = px/(px+py);
+			yVel = py/(px+py);
+			a = 1;
+			b = 1;
+		} else if (x >0 && y<0) { 
+			xVel = px/(px+py);
+			yVel = -py/(px+py);
+			a = 1;
+			b = -1;
+		} else if (x <0 && y<0) {
+			xVel = -px/(px+py); 
+			yVel = -py/(px+py);
+			a = -1;
+			b = -1;
+		} else { 
+			xVel = -px/(px+py);
+			yVel = py/(px+py);
+			a = -1;
+			b = 1;
+		} 
+		Bullet bullet = new Bullet (player.getX()+15*a, player.getY()+15*b, vbom, camera, physicsWorld, "player_bullet");
+		attachChild(bullet);
+		bullet.bullet_get_body().setLinearVelocity(xVel*20, yVel*20);
+}
 }
 
