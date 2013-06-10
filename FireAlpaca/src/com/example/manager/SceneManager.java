@@ -1,7 +1,10 @@
 package com.example.manager;
 
+import java.util.Iterator;
+
 import org.andengine.engine.Engine;
 import org.andengine.ui.IGameInterface.OnCreateSceneCallback;
+import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.handler.timer.ITimerCallback;
 import org.andengine.engine.handler.timer.TimerHandler;
 
@@ -10,15 +13,19 @@ import scene.LoadingScene;
 import scene.MainMenuScene;
 import scene.SplashScene;
 
+import Object.Bullet;
+
+import com.badlogic.gdx.physics.box2d.Body;
 import com.example.base.BaseScene;
 
 public class SceneManager {
 	
 	private BaseScene splashScene; 
 	private BaseScene menuScene; 
-	private BaseScene gameScene; 
+	private GameScene gameScene; 
 	private BaseScene loadingScene; 
 	private BaseScene profileScene; 
+	private int level = 1; 
 	
 	private static final SceneManager INSTANCE = new SceneManager(); 
 	
@@ -120,7 +127,17 @@ public class SceneManager {
 				
 				mEngine.unregisterUpdateHandler(pTimerHandler); 
 				ResourcesManager.getInstance().loadGameResources(); 
-				gameScene = new GameScene(); 
+				gameScene = new GameScene();
+				gameScene.registerUpdateHandler(new IUpdateHandler() {
+			        @Override
+			        public void reset() { }
+
+			        @Override
+			        public void onUpdate(final float pSecondsElapsed) {
+			           
+			        	gameScene.delete_entity();
+			        }
+			    });
 				setScene(gameScene); 
 				
 			}
@@ -128,6 +145,7 @@ public class SceneManager {
 		}));
 		
 	}
+
 	
 	public void loadMenuScene(final Engine mEngine) { 
 		
@@ -146,6 +164,14 @@ public class SceneManager {
 
 		}));
 		
+	}
+	
+	public int getLevel() {
+		return level;
+	}
+	
+	public void setLevel(int lv) {
+		level = lv;
 	}
 	
 }

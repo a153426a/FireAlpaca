@@ -21,7 +21,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private final int MENU_MUSIC = 2;
 
 	@Override
-	public void createScene() {
+	public void createScene(int lv) {
 		createBackground();
 		createMenuChildScene();
 	}

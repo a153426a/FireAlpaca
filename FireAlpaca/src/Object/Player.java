@@ -22,6 +22,7 @@ public abstract class Player extends AnimatedSprite {
 	
 	private Body body; 
 	public abstract void onDie();
+	private float health;
 
 	
 	public Player(float pX, float pY, VertexBufferObjectManager vbo, Camera camera, PhysicsWorld physicsWorld) {
@@ -30,6 +31,7 @@ public abstract class Player extends AnimatedSprite {
 		createPhysics(camera, physicsWorld);
 		final long[] PLAYER_ANIMATE = new long[] { 10, 1, 10 };    
 	    animate(PLAYER_ANIMATE, 0, 2, true);
+	    health = 10;
 	}
 	
 	private void createPhysics(final Camera camera, PhysicsWorld physicsWorld) {
@@ -71,6 +73,14 @@ public abstract class Player extends AnimatedSprite {
 		return body;
 		
 	} 
+	
+	public float getHealth() {
+		return health;
+	}
+	
+	public void setHealth(float health) {
+		this.health = health; 
+	}
 	
 	
 		/*GameScene scene = (GameScene) SceneManager.getInstance().getCurrentScene(); 

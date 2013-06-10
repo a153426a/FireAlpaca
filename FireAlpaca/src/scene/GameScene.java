@@ -1,18 +1,14 @@
 package scene;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.camera.hud.controls.AnalogOnScreenControl;
 import org.andengine.engine.camera.hud.controls.AnalogOnScreenControl.IAnalogOnScreenControlListener;
 import org.andengine.engine.camera.hud.controls.BaseOnScreenControl;
-import org.andengine.engine.handler.timer.ITimerCallback;
-import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.LoopEntityModifier;
 import org.andengine.entity.modifier.ScaleModifier;
@@ -25,6 +21,7 @@ import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.input.touch.TouchEvent;
+import org.andengine.input.touch.controller.MultiTouchController;
 import org.andengine.opengl.util.GLState;
 import org.andengine.util.SAXUtils;
 import org.andengine.util.adt.align.HorizontalAlign;
@@ -60,9 +57,11 @@ import extra.LevelCompleteWindow.StarsCount;
 public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	
 	private HUD gameHUD;
-	private PhysicsWorld physicsWorld; 
+	public PhysicsWorld physicsWorld; 
 	private Text scoreText; 
 	private int score = 0; 
+	private boolean isLevelComplete = false;
+	private boolean firstTouch = false;
 	
 	//game graphic fields
 	private static final String TAG_ENTITY = "entity";
@@ -80,10 +79,16 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_YELLOW_ENEMY = "yellowEnemy";
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BASE = "base"; 
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_FLAG = "flag"; 
+	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BOSS = "boss";
 	private Player player;
-	public LinkedList<Bullet> bulletList; 
 	public int bulletCount; 
-	private List<Enemy> enemyList;
+
+	
+	//many many many hashMaps
+	private HashMap enemies;
+	private HashMap player_bullets; 
+	private HashMap breakables;
+	private HashMap enemy_bullets;
 	
 	//Enum for enemy AI
 	public enum Map {
@@ -93,46 +98,99 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	public Map[][] map;
 	
 	private Text gameOverText;
+	private Text intro;
 	private LevelCompleteWindow levelCompleteWindow;
 	private boolean gameOverDisplayed = false;
 	
 	
 	//analog on screen control
-	private AnalogOnScreenControl analogControl;
+	private AnalogOnScreenControl analogLeftControl;
 	
 
 	@Override
-	public void createScene() {
-		enemyList = new ArrayList<Enemy>();
+	public void createScene(int lv) {
+		enemies = new HashMap();
 		map = new Map[40][24];
 		for(int i=0; i<39; i++) {
 			for(int j=0; j<23; j++) { 
 				map[i][j] = Map.EMPTY;
 			}
 		}
+		breakables = new HashMap();
+		player_bullets = new HashMap();
+		enemy_bullets = new HashMap();
+		engine.setTouchController(new MultiTouchController());
 		createBackground(); 
-		createControl();
+		createLeftControl();
+		createRightControl();
 		createHUD(); 
 		createPhysics(); 
-		loadLevel(1);
+		loadLevel(lv);
 		setOnSceneTouchListener(this);
+		createIntro(); 
+		displayIntroText();
 		createGameOverText();
 		levelCompleteWindow = new LevelCompleteWindow(vbom); 
-		bulletList = new LinkedList<Bullet>(); 
+		}
+	
+	private void createIntro() {
+
+		if (level == 1 || level == 5) {
+			intro = new Text(0, 0, resourcesManager.font,
+					"Destory all enemy! ", vbom);
+		} else if (level == 2 || level == 6) {
+			intro = new Text(0, 0, resourcesManager.font, "Protect the base! ",
+					vbom);
+		} else if (level == 3 || level == 7) {
+			intro = new Text(0, 0, resourcesManager.font,
+					"Reach the extraction flag! ", vbom);
+		} else if (level == 4) {
+			intro = new Text(0, 0, resourcesManager.font,
+					"Survive for 20 seconds!  ", vbom);
+		} else {
+			intro = new Text(0, 0, resourcesManager.font,
+					"Kill the Final Boss! ", vbom);
+		}
+
+	}
+
+	private void displayIntroText() {
+		intro.setPosition(camera.getCenterX(), camera.getCenterY());
+		attachChild(intro);
 	}
 	
 	
-	public void createControl() {
-	analogControl = new AnalogOnScreenControl(68, 68, 
+	public void createLeftControl() {
+       analogLeftControl = new AnalogOnScreenControl(68, 68, camera, ResourcesManager.getInstance().analog_base_region,
+        		ResourcesManager.getInstance().analog_knob_region, 0.1f, 200, vbom, new IAnalogOnScreenControlListener() {
+			@Override
+			public void onControlChange(final BaseOnScreenControl pBaseOnScreenControl, final float pValueX, final float pValueY){
+				player.getBody().setLinearVelocity(pValueX*3,  pValueY * 3);				
+			}
+			
+			@Override
+			public void onControlClick(final AnalogOnScreenControl pAnalogOnScreenControl) {
+				
+			}
+		});
+		
+		analogLeftControl.getControlBase().setBlendFunction(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		analogLeftControl.getControlBase().setAlpha(0.5f);
+		analogLeftControl.getControlBase().setScaleCenter(0, 128);
+		//analogLeftControl.refreshControlKnobPosition();
+
+		setChildScene(analogLeftControl);		
+	}
+
+	public void createRightControl() {
+    final AnalogOnScreenControl analogRightControl = new AnalogOnScreenControl(700, 68,
 				camera,ResourcesManager.getInstance().analog_base_region, ResourcesManager.getInstance().analog_knob_region, 0.1f, 200,
 				vbom, new IAnalogOnScreenControlListener(){
 			@Override
 			public void onControlChange(final BaseOnScreenControl pBaseOnScreenControl, final float pValueX, final float pValueY){
-				player.getBody().setLinearVelocity(pValueX*2,  pValueY * 2);
-				if (pValueX != 0 && pValueY != 0 && CoolDown.getSharedInstance().checkValidity())
+				if ((pValueX != 0 || pValueY != 0) && CoolDown.getSharedInstance().checkValidity())
 			 {
 				player_shoot(pValueX, pValueY); }
-				//clean();
 				
 			}
 			
@@ -142,17 +200,16 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 			}
 		});
 		
-		analogControl.getControlBase().setBlendFunction(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-		analogControl.getControlBase().setAlpha(0.5f);
-		analogControl.getControlBase().setScaleCenter(0, 128);
-		analogControl.refreshControlKnobPosition();
-
-		setChildScene(analogControl);		
+		analogRightControl.getControlBase().setBlendFunction(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		analogRightControl.getControlBase().setAlpha(0.5f);
+		analogRightControl.getControlBase().setScaleCenter(800, 128);
+		//analogRightControl.refreshControlKnobPosition();
+		analogLeftControl.setChildScene(analogRightControl);		
 	}
-
+	
 	@Override
 	public void onBackKeyPressed() {
-		
+		SceneManager.getInstance().setLevel(1);
 		SceneManager.getInstance().loadMenuScene(engine);
 		
 	}
@@ -206,7 +263,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	
 	private void createPhysics() { 
 		
-		physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, 0), false); 
+		physicsWorld = new FixedStepPhysicsWorld(30, new Vector2(0f, 0f), false, 8, 1);
+		//physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, 0), false); 
 		registerUpdateHandler(physicsWorld); 
 		physicsWorld.setContactListener(contactListener());
 		
@@ -252,6 +310,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	                levelObject = new Sprite(x, y, resourcesManager.breakable_region, vbom);
 	                final Body body = PhysicsFactory.createBoxBody(physicsWorld, levelObject, BodyType.StaticBody, FIXTURE_DEF);
 	                body.setUserData("breakable");
+	                breakables.put(body, levelObject);
 	                map[(x-10)/20][(y-10)/20] = Map.BREAKABLE;
 	            }
 	            
@@ -297,8 +356,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	                    @Override
 	                    public void onDie() {
 	                    	if (!gameOverDisplayed) {
-	                            //physicsWorld.unregisterPhysicsConnector(physicsConnector);
-	                            player.getBody().setActive(false);
+	                  
 	                            displayGameOverText();
 	                        }
 	                    }
@@ -316,11 +374,22 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	                    {
 	                        super.onManagedUpdate(pSecondsElapsed);
 
-	                        if (player.collidesWith(this))
+	                        if (level != 3 && level != 6 && level != 4 && enemies.isEmpty() )
 	                        {
-	                            levelCompleteWindow.display(StarsCount.TWO, GameScene.this, camera);
+	                            if(score > 100 && score < 200) {
+	                            	levelCompleteWindow.display(StarsCount.TWO, GameScene.this, camera);
+	                            } else if(score > 200){
+	                            	levelCompleteWindow.display(StarsCount.THREE, GameScene.this, camera);
+	                            } else { 
+	                            	levelCompleteWindow.display(StarsCount.ONE, GameScene.this, camera);
+	                            }
+	                            isLevelComplete = true;
 	                            this.setVisible(false);
 	                            this.setIgnoreUpdate(true);
+	                        } else if(level == 3 || level == 6) {
+	                        	//TODO
+	                        } else { 
+	                        	//TODO
 	                        }
 	                    }
 	                };
@@ -330,53 +399,82 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	                     
 	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_RED_ENEMY))
 	            {
-	                levelObject = new Enemy(x, y, vbom, camera, physicsWorld, ResourcesManager.getInstance().red_enemy_region,player)
+	                Enemy enemy= new Enemy(x, y, vbom, camera, physicsWorld, ResourcesManager.getInstance().red_enemy_region,player)
 	                {
 	                    @Override
 	                    public void onDie() {
 	                    	addToScore(100);
-	                    	this.get_body().setActive(false);
-                            this.setVisible(false);
-                            this.setIgnoreUpdate(true);
-	                    	enemyList.remove(this);
 	                    	map[(int) ((this.getX()-10)/20)][(int) ((this.getY()-10)/20)] = null;
 	                    }
+	                    
+	                    @Override
+	                    public void enemy_shoot() {
+	                    	if (CoolDown.getSharedInstance().checkValidity()) {
+	                		int a=1, b=1;
+	                		Bullet bullet = new Bullet (this.getX()+10*a, this.getY()+10*b, vbom, camera, physicsWorld, "enemy_bullet");
+	                		attachChild(bullet);
+	                		enemy_bullets.put(bullet.bullet_get_body(), bullet);
+	                		bullet.bullet_get_body().setLinearVelocity(20, 20);
+	                    	}
+	                    }
+	             
+	            
 	                };
-	                enemyList.add((Enemy)levelObject);
+	                levelObject = enemy;
+	                enemies.put(enemy.get_body(), enemy);
 	                map[(x-10)/20][(y-10)/20] = Map.ENEMY;
 	            }
 	            
 	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BLUE_ENEMY))
 	            {
-	                levelObject = new Enemy(x, y, vbom, camera, physicsWorld, ResourcesManager.getInstance().blue_enemy_region,player)
+	                Enemy enemy = new Enemy(x, y, vbom, camera, physicsWorld, ResourcesManager.getInstance().blue_enemy_region,player)
 	                {
 	                    @Override
 	                    public void onDie() {
 	                    	addToScore(30);
-                            this.setVisible(false);
-                            this.setIgnoreUpdate(true);
-	                    	enemyList.remove(this);
+	             
 	                    	map[(int) ((this.getX()-10)/20)][(int) ((this.getY()-10)/20)] = null;
 	                    }
+	                    @Override
+	                    public void enemy_shoot() {
+	                    	if (CoolDown.getSharedInstance().checkValidity()) {
+	                		
+	                		Bullet bullet = new Bullet (this.getX()+10, this.getY()+10, vbom, camera, physicsWorld, "enemy_bullet");
+	                		attachChild(bullet);
+	                		enemy_bullets.put(bullet.bullet_get_body(), bullet);
+	                		bullet.bullet_get_body().setLinearVelocity(20, 20);
+	                    	}
+	                    }
 	                };
-	                enemyList.add((Enemy)levelObject);
+	                levelObject = enemy;
+	                enemies.put(enemy.get_body(), enemy);
 	                map[(x-10)/20][(y-10)/20] = Map.ENEMY;
 	            }
 	            
 	            else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_YELLOW_ENEMY))
 	            {
-	                levelObject = new Enemy(x, y, vbom, camera, physicsWorld, ResourcesManager.getInstance().yellow_enemy_region, player)
+	                Enemy enemy = new Enemy(x, y, vbom, camera, physicsWorld, ResourcesManager.getInstance().yellow_enemy_region, player)
 	                {
 	                    @Override
 	                    public void onDie() {
 	                    	addToScore(50);
-                            this.setVisible(false);
-                            this.setIgnoreUpdate(true);
-	                    	enemyList.remove(this);
+	                    	
 	                    	map[(int) ((this.getX()-10)/20)][(int) ((this.getY()-10)/20)] = null;
 	                    }
+	                    
+	                    @Override
+	                    public void enemy_shoot() {
+	                    	if (CoolDown.getSharedInstance().checkValidity()) {
+	                		int a, b;
+	                		Bullet bullet = new Bullet (this.getX()+10, this.getY()+10, vbom, camera, physicsWorld, "enemy_bullet");
+	                		attachChild(bullet);
+	                		enemy_bullets.put(bullet.bullet_get_body(), bullet);
+	                		bullet.bullet_get_body().setLinearVelocity(20, 20);
+	                    	}
+	                    }
 	                };
-	                enemyList.add((Enemy)levelObject);
+	                levelObject = enemy;
+	                enemies.put(enemy.get_body(), enemy);
 	                map[(x-10)/20][(y-10)/20] = Map.ENEMY;
 	            } 
 	            
@@ -397,8 +495,18 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	@Override
 	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
 		
-		if (pSceneTouchEvent.isActionDown()) {
-	        
+		if(pSceneTouchEvent.isActionDown() && !firstTouch) {
+			intro.setVisible(false);
+			intro.detachSelf();
+			firstTouch = true; 
+		}
+		
+		if (pSceneTouchEvent.isActionDown() && level == 4 && gameOverDisplayed) {
+	        SceneManager.getInstance().setLevel(5); 
+	        SceneManager.getInstance().loadGameScene(engine); 
+	    } else if (pSceneTouchEvent.isActionDown() && level < 8 && isLevelComplete) {
+	    	SceneManager.getInstance().setLevel(level+1); 
+	        SceneManager.getInstance().loadGameScene(engine); 
 	    }
 		
 	    return false;
@@ -429,48 +537,116 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	            final Fixture x2 = contact.getFixtureB();
 	            
 	            
-	            if (x1.getBody().getUserData().equals("stone") && x2.getBody().getUserData().equals("player"))
-	            {
-	                player.onDie();
-	            }
-	            
-	            if (x1.getBody().getUserData().equals("breakable") && x2.getBody().getUserData().equals("player"))
-	            {
-	                engine.registerUpdateHandler(new TimerHandler(0.2f, new ITimerCallback()
-	                {                                    
-	                    public void onTimePassed(final TimerHandler pTimerHandler)
-	                    {
-	                    	pTimerHandler.reset();
-	                        engine.unregisterUpdateHandler(pTimerHandler);
-	                        player.onDie();
-	                    }
-	                }));
-	            }
-	            
-	            
-	            if ((x1.getBody().getUserData().equals("blueEnemy")||
-	            		x1.getBody().getUserData().equals("redEnemy")||x1.getBody().getUserData().equals("yellowEnemy"))
-	            		&& x2.getBody().getUserData().equals("player"))
-	            {
-	            	player.onDie();
-	            }
-	            
 	            
 	            if ((x2.getBody().getUserData().equals("blueEnemy")||
 	            		x2.getBody().getUserData().equals("redEnemy")||x2.getBody().getUserData().equals("yellowEnemy"))
 	            		&& x1.getBody().getUserData().equals("player"))
 	            {
-	            	player.onDie();
+	            	x1.getBody().setUserData("player_dead");
 	            }
 	            
-	            if(x2.getBody().getUserData().equals("bullet") && x1.getBody().equals("stone")) {
-	            	player.onDie();
+	            //stone + player bullet;
+	            if(x1.getBody().getUserData().equals("stone") && x2.getBody().getUserData().equals("player_bullet")) {
+	            	
+	            	x2.getBody().setUserData("player_bullet_deleted");
+	            	
+	              
+	            }
+	            
+	            //bullet & bullet
+	            else if(x1.getBody().getUserData().equals("player_bullet") && x2.getBody().getUserData().equals("player_bullet")) {
+	            	
+	            	x1.getBody().setUserData("player_bullet_deleted");
+	            	x2.getBody().setUserData("player_bullet_deleted");
+	            }
+	            
+	            //bullet & breakable
+	            else if(x1.getBody().getUserData().equals("breakable") && x2.getBody().getUserData().equals("player_bullet")) {
+	            	x1.getBody().setUserData("breakable_deleted");
+	            	x2.getBody().setUserData("player_bullet_deleted");
+	            }
+	            
+	            //bullet & redEnemy
+	            else if(x1.getBody().getUserData().equals("redEnemy") && x2.getBody().getUserData().equals("player_bullet")) {
+	            	x2.getBody().setUserData("player_bullet_deleted");
+	            	Enemy e = (Enemy) enemies.get(x1.getBody());
+	            	float health = e.get_health();
+	            	// TODO: shop feature: change 1 to player attack value later
+	            	if (health > 1) {
+	            		e.set_health(health-1);
+	            	}
+	            	else {
+	            		x1.getBody().setUserData("red_enemy_deleted");
+	            	}
+	            }
+	            
+	            //bullet & blueEnemy
+	            else if(x1.getBody().getUserData().equals("blueEnemy") && x2.getBody().getUserData().equals("player_bullet")) {
+	            	x1.getBody().setUserData("blue_enemy_deleted");
+	            	x2.getBody().setUserData("player_bullet_deleted");
+	            }
+	            
+	            //bullet & blueEnemy
+	            else if(x2.getBody().getUserData().equals("blueEnemy") && x1.getBody().getUserData().equals("player_bullet")) {
+	            	x2.getBody().setUserData("blue_enemy_deleted");
+	            	x1.getBody().setUserData("player_bullet_deleted");
 	            }
 	            
 	            
-	            if (x1.getBody().getUserData() != null && x2.getBody().getUserData() != null)
+	            //bullet & yellowEnemy
+	            else if (x1.getBody().getUserData().equals("yellowEnemy") && x2.getBody().getUserData().equals("player_bullet")) {
+	 	            	x2.getBody().setUserData("player_bullet_deleted");
+	 	            	Enemy e = (Enemy) enemies.get(x1.getBody());
+	 	            	float health = e.get_health();
+	 	            	// TODO: shop feature: change 1 to player attack value later
+	 	            	if (health > 1) {
+	 	            		e.set_health(health-1);
+	 	            	}
+	 	            	else {
+	 	            		x1.getBody().setUserData("yellow_enemy_deleted");
+	 	            	}
+	            }
+	            
+	            //when player bullet collide with anything else it just disappear
+	           /* else if (x2.getBody().getUserData().equals("player_bullet")) {
+	            	x2.getBody().setUserData("player_bullet_deleted");
+	            }*/
+	            
+	            //enemy bullet with enemy
+	            else if ((x2.getBody().getUserData().equals("blueEnemy")||
+	            		x2.getBody().getUserData().equals("redEnemy")||x2.getBody().getUserData().equals("yellowEnemy"))
+	            		&& x1.getBody().getUserData().equals("enemy_bullet"))
 	            {
-	                
+	            	x2.getBody().setUserData("enemy_bullet");
+	            }
+	            
+	            //enemy bullet & breakable
+	            else if(x1.getBody().getUserData().equals("breakable") && x2.getBody().getUserData().equals("enemy_bullet")) {
+	            	x1.getBody().setUserData("breakable_deleted");
+	            	x2.getBody().setUserData("enemy_bullet_deleted");
+	            }
+	            
+	            //enemy bullet & unbreakable stone
+	            else if(x1.getBody().getUserData().equals("stone") && x2.getBody().getUserData().equals("enemy_bullet")) {
+	            	
+	            	x2.getBody().setUserData("enemy_bullet_deleted");
+	            	
+	              
+	            }
+	            
+	            //enemy bullet & player 
+	            else if(x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("enemy_bullet")) {
+	            	float health = player.getHealth();
+	            	if (health > 1) {
+	            		player.setHealth(health - 1);
+	            	}
+	            	else {
+	            	  	x1.getBody().setUserData("player_dead");
+	            	}
+	            	x2.getBody().setUserData("enemy_bullet_deleted");
+	
+	            	
+	              
 	            }
 	            
 	        }
@@ -479,14 +655,32 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	        {
 	            final Fixture x1 = contact.getFixtureA();
 	            final Fixture x2 = contact.getFixtureB();
-
-	            if (x1.getBody().getUserData() != null && x2.getBody().getUserData() != null)
-	            {
-	                if (x2.getBody().getUserData().equals("player"))
-	                {
-	                    //TODO;
-	                }
-	            }
+	            
+	            //stone + player bullet;
+	            /*if(x1.getBody().getUserData().equals("stone") && x2.getBody().getUserData().equals("player_bullet")) {
+	            	
+	            	
+	               	x2.getBody().setUserData("deleteStatus");
+	            	
+	              	return;
+	            }*/
+	            
+	            //bullet & bullet
+	           /* else if(x1.getBody().getUserData().equals("player_bullet") && x2.getBody().getUserData().equals("player_bullet")) {
+	            	
+	            	Bullet b1 = (Bullet) player_bullets.get(x1.getBody());
+	               	player_bullets.remove(x1.getBody());
+	               	b1.bullet_get_pw().unregisterPhysicsConnector(physicsWorld.getPhysicsConnectorManager().findPhysicsConnectorByShape(b1));
+	                b1.bullet_get_pw().destroyBody(x2.getBody());
+	               	detachChild(b1);
+	            	
+	            	Bullet b2 = (Bullet) player_bullets.get(x2.getBody());
+	               	player_bullets.remove(x2.getBody());
+	               	b2.bullet_get_pw().unregisterPhysicsConnector(physicsWorld.getPhysicsConnectorManager().findPhysicsConnectorByShape(b2));
+	                b2.bullet_get_pw().destroyBody(x2.getBody());
+	               	detachChild(b2);
+	               	return;
+	            }*/
 	        }
 
 			@Override
@@ -506,89 +700,99 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	    return contactListener;
 	}
 	
-	/*public void clean() {
-		Iterator<Bullet> it = bulletList.iterator(); 
-		
-		while(it.hasNext()) { 
-			Bullet b = (Bullet) it.next(); 
-			int mapX = (int) ((b.sprite.getX()-2)/20);
-			int mapY = (int) ((b.sprite.getY()-2)/20); 
-			if(b.sprite.getX()<=0 || b.sprite.getX()>=800 || b.sprite.getY()>=480 || b.sprite.getY()<=0) {
-				BulletPool.shareBulletPool().recyclePoolItem(b); 
-				it.remove(); 
-				continue; 
-			}
-			
-			if(map[mapX][mapY] != Map.EMPTY) { 
-				BulletPool.shareBulletPool().recyclePoolItem(b); 
-				it.remove();
-				continue; 
-			}
-			
-			if(map[mapX][mapY] == Map.BREAKABLE) { 
-				//TODO remove breakable
-				map[mapX][mapY] = Map.EMPTY; 
-				addToScore(10);
-				continue; 
-			}
-			
-			if(map[mapX][mapY] == Map.ENEMY) { 
-				map[mapX][mapY] = Map.EMPTY;
-				find_enemy(mapX, mapY).onDie();
-				
-			}
-			
-		}
-	}*/
+
 	
-	
-	private Enemy find_enemy(int x, int y) {
-		
-		int xMin = x*20+10; 
-		int xMax = x*20+30; 
-		int yMin = y*20+10; 
-		int yMax = y*20+30; 
-		Enemy result = null;
-		
-		for(int i=0; i<enemyList.size(); i++) { 
-			if(enemyList.get(i).getX()>=xMin && enemyList.get(i).getX()<=xMax && enemyList.get(i).getY()>=yMin && enemyList.get(i).getY()<=yMax) {
-				result = enemyList.get(i);
-			}
-		}
-		return result;
-	}
 	
 
-public void player_shoot(float x, float y) {
+	
+
+	public void player_shoot(float x, float y) {
 		
-		float xVel, yVel;
-		int a,b;
+		float xVel = 0, yVel = 0;
+		int a = 0,b = 0;
 		float px = x*x; 
 		float py = y*y;
-		if(x >0 && y >0) { 
+		if(x >=0 && y >=0) { 
 			xVel = px/(px+py);
 			yVel = py/(px+py);
 			a = 1;
 			b = 1;
-		} else if (x >0 && y<0) { 
+		} else if (x >=0 && y<=0) { 
 			xVel = px/(px+py);
 			yVel = -py/(px+py);
 			a = 1;
 			b = -1;
-		} else if (x <0 && y<0) {
+		} else if (x <=0 && y<=0) {
 			xVel = -px/(px+py); 
 			yVel = -py/(px+py);
 			a = -1;
 			b = -1;
-		} else { 
+		} else if (x <=0 && y>=0){ 
 			xVel = -px/(px+py);
 			yVel = py/(px+py);
 			a = -1;
 			b = 1;
 		} 
-		Bullet bullet = new Bullet (player.getX()+15*a, player.getY()+15*b, vbom, camera, physicsWorld, "player_bullet");
+		if (x == 0) {
+			a = 0;
+		}
+		if (y == 0) {
+			b = 0;
+		}
+		Bullet bullet = new Bullet (player.getX()+10*a, player.getY()+10*b, vbom, camera, physicsWorld, "player_bullet");
 		attachChild(bullet);
+		player_bullets.put(bullet.bullet_get_body(), bullet);
 		bullet.bullet_get_body().setLinearVelocity(xVel*20, yVel*20);
-}
+	}
+	
+	public void delete_entity() {
+		Iterator<Body> list = physicsWorld.getBodies();
+		while (list.hasNext()) {
+			Body currentBody = list.next();
+			if (currentBody.getUserData().equals("player_dead")) {
+				player.onDie();
+				physicsWorld.unregisterPhysicsConnector(physicsWorld.getPhysicsConnectorManager().findPhysicsConnectorByShape(player));
+				physicsWorld.destroyBody(currentBody);
+				detachChild(player);
+;			}
+			else if (currentBody.getUserData().equals("player_bullet_deleted")) {
+				Bullet b = (Bullet) player_bullets.get(currentBody);
+               	player_bullets.remove(currentBody);
+            	physicsWorld.unregisterPhysicsConnector(physicsWorld.getPhysicsConnectorManager().findPhysicsConnectorByShape(b));
+                physicsWorld.destroyBody(currentBody);
+              	detachChild(b);
+			}
+			
+			else if (currentBody.getUserData().equals("breakable_deleted")) {
+				Sprite b = (Sprite) breakables.get(currentBody);
+				breakables.remove(currentBody);
+				physicsWorld.unregisterPhysicsConnector(physicsWorld.getPhysicsConnectorManager().findPhysicsConnectorByShape(b));
+				physicsWorld.destroyBody(currentBody);
+				detachChild(b);
+			}
+			
+			else if (currentBody.getUserData().equals("red_enemy_deleted")||currentBody.getUserData().equals("blue_enemy_deleted")
+					||currentBody.getUserData().equals("yellow_enemy_deleted")) {
+				Enemy e = (Enemy) enemies.get(currentBody);
+				physicsWorld.unregisterPhysicsConnector(physicsWorld.getPhysicsConnectorManager().findPhysicsConnectorByShape(e));
+            	physicsWorld.destroyBody(currentBody);
+            	detachChild(e);
+                enemies.remove(currentBody);
+				e.onDie();
+			}
+			
+			else if (currentBody.getUserData().equals("enemy_bullet_deleted")) {
+				Bullet b = (Bullet) enemy_bullets.get(currentBody);
+               	enemy_bullets.remove(currentBody);
+            	physicsWorld.unregisterPhysicsConnector(physicsWorld.getPhysicsConnectorManager().findPhysicsConnectorByShape(b));
+                physicsWorld.destroyBody(currentBody);
+              	detachChild(b);
+			}
+			
+			
+		}
+	}
+
+
 }
 

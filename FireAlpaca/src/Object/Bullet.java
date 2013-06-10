@@ -18,21 +18,22 @@ import com.example.manager.SceneManager;
 public class Bullet extends Sprite {
 	
 	private Body body;
+	private PhysicsWorld pw;
 
 	public Bullet(float pX, float pY, VertexBufferObjectManager vbom, Camera camera, PhysicsWorld physicsWorld, String userData) {
 		super(pX, pY, ResourcesManager.getInstance().bullet_region, vbom);
 		createPhysics(camera, physicsWorld, userData);
 		this.setScale(0.8f);
-		
-		
+		this.pw = physicsWorld;
 		// TODO Auto-generated constructor stub
 	}
 
 	
 	private void createPhysics(final Camera camera, PhysicsWorld physicsWorld, String userData)
 	{
-		body = PhysicsFactory.createBoxBody(physicsWorld, this, BodyType.KinematicBody, PhysicsFactory.createFixtureDef(0, 0, 0));
+		body = PhysicsFactory.createBoxBody(physicsWorld, this, BodyType.DynamicBody, PhysicsFactory.createFixtureDef(0, 0, 0));
 		body.setUserData(userData);
+		body.isBullet();
 
 		
 		physicsWorld.registerPhysicsConnector(new PhysicsConnector(this, body, true, false)
@@ -41,9 +42,6 @@ public class Bullet extends Sprite {
 			public void onUpdate(float pSecondsElapsed) 
 			{
 	            super.onUpdate(pSecondsElapsed);
-
-				//TODO;
-				
 				
 			}	
 		});
@@ -51,13 +49,18 @@ public class Bullet extends Sprite {
 	}
 	
 	
+	
+	
 	public void bullet_destroy() {
 		this.setVisible(false);
 		this.setIgnoreUpdate(true);
-		this.body.setActive(false);
 		this.detachSelf();
+		
 	}
 	
+	public PhysicsWorld bullet_get_pw() {
+		return pw;
+	}
 	
 	public Body bullet_get_body() {
 		return body;

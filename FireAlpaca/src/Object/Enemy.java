@@ -3,6 +3,7 @@ package Object;
 import java.util.Random;
 
 import org.andengine.engine.camera.Camera;
+import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
@@ -18,6 +19,8 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.example.manager.ResourcesManager;
 import com.example.manager.SceneManager;
+
+import extra.CoolDown;
 public abstract class Enemy extends AnimatedSprite{
 	private Body body;
 	private float health;
@@ -65,11 +68,13 @@ public abstract class Enemy extends AnimatedSprite{
 				super.onUpdate(pSecondsElapsed);
 				enemy_move(body);
 				if ((int)(getX()-10)/20 !=x || (int)(getY()-10)/20 != y) {
-					GameScene scene = (GameScene) SceneManager.getInstance().getCurrentScene();
-					scene.map[x][y] = Map.EMPTY;
+					Scene scene =  SceneManager.getInstance().getCurrentScene();
+					if (scene instanceof GameScene) {
+					((GameScene)scene).map[x][y] = Map.EMPTY;
 					x = (int)(getX()-10)/20;
 					y = (int)(getY()-10)/20;
-					scene.map[x][y] = Map.ENEMY;
+					((GameScene)scene).map[x][y] = Map.ENEMY;
+					}
 				}
 				
 			}	
@@ -100,7 +105,7 @@ public abstract class Enemy extends AnimatedSprite{
 		if (y_distance != 0 && x_distance != 0) {
 			result = false;
 		}
-		else if (y_distance == 0) {
+		/*else if (y_distance == 0) {
 			if (player_x > enemy_x) {
 				for (int x = enemy_x+1; x <player_x; x++){
 					if (scene.map[x][enemy_y] == Map.STONE) {
@@ -115,6 +120,7 @@ public abstract class Enemy extends AnimatedSprite{
 					}
 				}	
 			}
+		
 		}
 		
 		else if (x_distance ==0) {
@@ -132,29 +138,26 @@ public abstract class Enemy extends AnimatedSprite{
 					}
 				}	
 			}
-		}
+		}*/
 		return result;
 	}
 	
-	private void enemy_shoot() 
-	{
-	}
+	public abstract void enemy_shoot() ;
 	
 	//enemy action update 
 	private void enemy_move(Body body)
 	{	
-		
-		if (checkRange()) 
-		{
+
 			if (checkShoot()) {
-				enemy_shoot();
+				//enemy_shoot();
 			}
 	
-		}
+		
 		/*if (enemy_collide()){
 				//deal with collision
 		}*/
-		else {enemy_random_move(body);}
+		enemy_random_move(body);
+		
 	}
 	
 
@@ -166,7 +169,7 @@ public abstract class Enemy extends AnimatedSprite{
         
         XVelocity = (int)randomGenerator.nextGaussian();
         YVelocity = (int)randomGenerator.nextGaussian();
-        body.setLinearVelocity(new Vector2(XVelocity*3, YVelocity*3)); 
+        body.setLinearVelocity(new Vector2(XVelocity*5, YVelocity*5)); 
         
 
 	}
@@ -182,6 +185,13 @@ public abstract class Enemy extends AnimatedSprite{
 		return body;
 	}
 
+	public float get_health() {
+		return health;
+	}
+	
+	public void set_health(float health) {
+		this.health = health;
+	}
 
 	
 	
