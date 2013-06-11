@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<level width="800" height="480">    
-	<entity x="410"  y="30" type ="player"/>
-	<entity x="380"  y="40" type ="base"/>
+<level width="800" height="480">  
+	<!-- Player -->
+	<entity x="490"  y="70" type ="player"/>
+	<entity x="400"  y="40" type ="base"/>
 	<!-- Frame -->
 	<entity x="10" y="10" type="stone"/>
 	<entity x="30" y="10" type="stone"/>
@@ -128,11 +129,106 @@
     <entity x="10" y="50" type="stone"/>
     <entity x="10" y="30" type="stone"/>
     <!-- Map detail -->
+	<entity x="130" y="250" type="breakable"/>
+	<entity x="150" y="250" type="breakable"/>
+	<entity x="170" y="250" type="breakable"/>
+	<entity x="190" y="250" type="breakable"/>
+	<entity x="210" y="250" type="breakable"/>
+	<entity x="230" y="250" type="breakable"/>
+	<entity x="250" y="250" type="breakable"/>
+	<entity x="250" y="270" type="breakable"/>
+	<entity x="250" y="290" type="breakable"/>
+	<entity x="250" y="310" type="breakable"/>
+	<entity x="250" y="330" type="breakable"/>
+	<entity x="250" y="350" type="breakable"/>
 	
-	<entity x="250" y="170" type="coin"/>
-    <entity x="250" y="310" type="coin"/>
-    <entity x="550" y="310" type="coin"/>
-    <entity x="550" y="410" type="coin"/>
-    
-    <entity x="750" y="60" type = "levelComplete"/>
+	<entity x="670" y="250" type="breakable"/>
+	<entity x="650" y="250" type="breakable"/>
+	<entity x="630" y="250" type="breakable"/>
+	<entity x="610" y="250" type="breakable"/>
+	<entity x="590" y="250" type="breakable"/>
+	<entity x="570" y="250" type="breakable"/>
+	<entity x="550" y="250" type="breakable"/>
+	<entity x="550" y="270" type="breakable"/>
+	<entity x="550" y="290" type="breakable"/>
+	<entity x="550" y="310" type="breakable"/>
+	<entity x="550" y="330" type="breakable"/>
+	<entity x="550" y="350" type="breakable"/>
+	
+	<entity x="470" y="250" type="breakable"/>
+	<entity x="450" y="250" type="breakable"/>
+	<entity x="430" y="250" type="breakable"/>
+	<entity x="410" y="250" type="breakable"/>
+	<entity x="390" y="250" type="breakable"/>
+	<entity x="370" y="250" type="breakable"/>
+	<entity x="350" y="250" type="breakable"/>
+	<entity x="330" y="250" type="breakable"/>
+	
+	<entity x="470" y="350" type="breakable"/>
+	<entity x="450" y="350" type="breakable"/>
+	<entity x="430" y="350" type="breakable"/>
+	<entity x="410" y="350" type="breakable"/>
+	<entity x="390" y="350" type="breakable"/>
+	<entity x="370" y="350" type="breakable"/>
+	<entity x="350" y="350" type="breakable"/>
+	<entity x="330" y="350" type="breakable"/>
+	
+	<!-- Base Protection -->
+	<entity x="370" y="30" type="breakable"/>
+	<entity x="370" y="50" type="breakable"/>
+	<entity x="370" y="70" type="breakable"/>
+	<entity x="390" y="70" type="breakable"/>
+	<entity x="410" y="70" type="breakable"/>
+	<entity x="430" y="70" type="breakable"/>
+	<entity x="430" y="50" type="breakable"/>
+	<entity x="430" y="30" type="breakable"/>
+	
+	<entity x="350" y="30" type="breakable"/>
+	<entity x="350" y="50" type="breakable"/>
+	<entity x="350" y="70" type="breakable"/>
+	<entity x="350" y="90" type="breakable"/>
+	<entity x="370" y="90" type="breakable"/>
+	<entity x="390" y="90" type="breakable"/>
+	<entity x="410" y="90" type="breakable"/>
+	<entity x="430" y="90" type="breakable"/>
+	<entity x="450" y="90" type="breakable"/>
+	<entity x="450" y="70" type="breakable"/>
+	<entity x="450" y="50" type="breakable"/>
+	<entity x="450" y="30" type="breakable"/>
+	
+	<entity x="330" y="30" type="breakable"/>
+	<entity x="330" y="50" type="breakable"/>
+	<entity x="330" y="70" type="breakable"/>
+	<entity x="330" y="90" type="breakable"/>
+	<entity x="330" y="110" type="breakable"/>
+	<entity x="350" y="110" type="breakable"/>
+	<entity x="370" y="110" type="breakable"/>
+	<entity x="390" y="110" type="breakable"/>
+	<entity x="410" y="110" type="breakable"/>
+	<entity x="430" y="110" type="breakable"/>
+	<entity x="450" y="110" type="breakable"/>
+	<entity x="470" y="110" type="breakable"/>
+	<entity x="470" y="90" type="breakable"/>
+	<entity x="470" y="70" type="breakable"/>
+	<entity x="470" y="50" type="breakable"/>
+	<entity x="470" y="30" type="breakable"/>
+	
+	<!-- Enemy -->
+	<entity x="150"  y="290" type ="blueEnemy"/>
+	<entity x="150"  y="310" type ="blueEnemy"/>
+	<entity x="170"  y="290" type ="blueEnemy"/>
+	<entity x="170"  y="310" type ="blueEnemy"/>
+	
+	<entity x="630"  y="290" type ="blueEnemy"/>
+	<entity x="630"  y="310" type ="blueEnemy"/>
+	<entity x="650"  y="290" type ="blueEnemy"/>
+	<entity x="650"  y="310" type ="blueEnemy"/>
+	
+	<entity x="390"  y="370" type ="blueEnemy"/>
+	<entity x="390"  y="390" type ="blueEnemy"/>
+	<entity x="410"  y="370" type ="blueEnemy"/>
+	<entity x="410"  y="390" type ="blueEnemy"/>
+	
+	<entity x="-800" y="-800" type="levelComplete"/>
+	
 </level>

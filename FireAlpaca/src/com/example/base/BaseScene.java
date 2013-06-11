@@ -20,6 +20,7 @@ public abstract class BaseScene extends Scene {
 	protected BoundCamera camera; 
 	protected SceneManager sceneManager;
 	protected int level; 
+	protected int maxLevel;
 	
 	public BaseScene() { 
 		
@@ -30,6 +31,7 @@ public abstract class BaseScene extends Scene {
 		this.vbom = resourcesManager.vbom; 
 		this.camera = resourcesManager.camera; 
 		this.level = sceneManager.getLevel();
+		this.maxLevel = sceneManager.getMaxLevel();
 		createScene(level); 
 		
 	}

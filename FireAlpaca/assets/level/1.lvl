@@ -191,13 +191,13 @@
 	<entity x="670" y="50" type="stone"/>
 	<entity x="690" y="50" type="stone"/>
 	<!-- Mid vertical line -->
+	<entity x="410" y="70" type="stone"/>
 	<entity x="410" y="90" type="stone"/>
 	<entity x="410" y="110" type="stone"/>
 	<entity x="410" y="130" type="stone"/>
 	<entity x="410" y="150" type="stone"/>
 	<entity x="410" y="170" type="stone"/>
 	<entity x="410" y="190" type="stone"/>
-	<entity x="410" y="210" type="stone"/>
 	<entity x="390" y="290" type="stone"/>
 	<entity x="390" y="310" type="stone"/>
 	<entity x="390" y="330" type="stone"/>
@@ -241,7 +241,8 @@
 	<entity x="250" y="170" type="coin"/>
     <entity x="250" y="310" type="coin"/>
     <entity x="550" y="310" type="coin"/>
-    <entity x="550" y="170" type="coin"/>
+    <entity x="550" y="410" type="coin"/>
+	
+	<entity x="-800" y="-800" type="levelComplete"/>
     
-    <entity x="750" y="60" type = "levelComplete"/>
 </level>

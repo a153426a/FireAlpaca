@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <level width="800" height="480">    
 	<entity x="410"  y="30" type ="player"/>
-	<entity x="380"  y="40" type ="base"/>
 	<!-- Frame -->
 	<entity x="10" y="10" type="stone"/>
 	<entity x="30" y="10" type="stone"/>
@@ -128,11 +127,103 @@
     <entity x="10" y="50" type="stone"/>
     <entity x="10" y="30" type="stone"/>
     <!-- Map detail -->
+	<entity x="350" y="370" type="stone"/>
+	<entity x="370" y="370" type="stone"/>
+	<entity x="390" y="370" type="stone"/>
+	<entity x="410" y="370" type="stone"/>
+	<entity x="430" y="370" type="stone"/>
+	<entity x="450" y="370" type="stone"/>
 	
-	<entity x="250" y="170" type="coin"/>
-    <entity x="250" y="310" type="coin"/>
-    <entity x="550" y="310" type="coin"/>
-    <entity x="550" y="410" type="coin"/>
-    
-    <entity x="750" y="60" type = "levelComplete"/>
+	<entity x="150" y="350" type="stone"/>
+	<entity x="170" y="350" type="stone"/>
+	<entity x="190" y="350" type="stone"/>
+	<entity x="210" y="350" type="stone"/>
+	<entity x="230" y="350" type="stone"/>
+	<entity x="250" y="350" type="stone"/>
+	<entity x="270" y="350" type="stone"/>
+	
+	<entity x="530" y="350" type="stone"/>
+	<entity x="550" y="350" type="stone"/>
+	<entity x="570" y="350" type="stone"/>
+	<entity x="590" y="350" type="stone"/>
+	<entity x="610" y="350" type="stone"/>
+	<entity x="630" y="350" type="stone"/>
+	<entity x="650" y="350" type="stone"/>
+	
+	<entity x="150" y="270" type="stone"/>
+	<entity x="170" y="270" type="stone"/>
+	<entity x="190" y="270" type="stone"/>
+	<entity x="210" y="270" type="stone"/>
+	<entity x="230" y="270" type="stone"/>
+	<entity x="250" y="270" type="stone"/>
+	<entity x="270" y="270" type="stone"/>
+	
+	<entity x="530" y="270" type="stone"/>
+	<entity x="550" y="270" type="stone"/>
+	<entity x="570" y="270" type="stone"/>
+	<entity x="590" y="270" type="stone"/>
+	<entity x="610" y="270" type="stone"/>
+	<entity x="630" y="270" type="stone"/>
+	<entity x="650" y="270" type="stone"/>
+	
+	<entity x="150" y="190" type="stone"/>
+	<entity x="170" y="190" type="stone"/>
+	<entity x="190" y="190" type="stone"/>
+	<entity x="210" y="190" type="stone"/>
+	<entity x="230" y="190" type="stone"/>
+	<entity x="250" y="190" type="stone"/>
+	<entity x="270" y="190" type="stone"/>
+	
+	<entity x="530" y="190" type="stone"/>
+	<entity x="550" y="190" type="stone"/>
+	<entity x="570" y="190" type="stone"/>
+	<entity x="590" y="190" type="stone"/>
+	<entity x="610" y="190" type="stone"/>
+	<entity x="630" y="190" type="stone"/>
+	<entity x="650" y="190" type="stone"/>
+	<!-- Enemy -->
+	<entity x="400"  y="30" type ="boss"/>
+	<entity x="370"  y="390" type ="redEnemy"/>
+	<entity x="390"  y="390" type ="redEnemy"/>
+	<entity x="410"  y="390" type ="redEnemy"/>
+	<entity x="430"  y="390" type ="redEnemy"/>
+	
+	<entity x="170"  y="370" type ="redEnemy"/>
+	<entity x="190"  y="370" type ="redEnemy"/>
+	<entity x="210"  y="370" type ="redEnemy"/>
+	<entity x="230"  y="370" type ="redEnemy"/>
+	<entity x="250"  y="370" type ="redEnemy"/>
+	
+	<entity x="550"  y="370" type ="redEnemy"/>
+	<entity x="570"  y="370" type ="redEnemy"/>
+	<entity x="590"  y="370" type ="redEnemy"/>
+	<entity x="610"  y="370" type ="redEnemy"/>
+	<entity x="630"  y="370" type ="redEnemy
+	
+	<entity x="170"  y="290" type ="redEnemy"/>
+	<entity x="190"  y="290" type ="redEnemy"/>
+	<entity x="210"  y="290" type ="redEnemy"/>
+	<entity x="230"  y="290" type ="redEnemy"/>
+	<entity x="250"  y="290" type ="redEnemy"/>
+	
+	<entity x="550"  y="290" type ="redEnemy"/>
+	<entity x="570"  y="290" type ="redEnemy"/>
+	<entity x="590"  y="290" type ="redEnemy"/>
+	<entity x="610"  y="290" type ="redEnemy"/>
+	<entity x="630"  y="290" type ="redEnemy"/>
+	
+	<entity x="170"  y="210" type ="redEnemy"/>
+	<entity x="190"  y="210" type ="redEnemy"/>
+	<entity x="210"  y="210" type ="redEnemy"/>
+	<entity x="230"  y="210" type ="redEnemy"/>
+	<entity x="250"  y="210" type ="redEnemy"/>
+	
+	<entity x="550"  y="210" type ="redEnemy"/>
+	<entity x="570"  y="210" type ="redEnemy"/>
+	<entity x="590"  y="210" type ="redEnemy"/>
+	<entity x="610"  y="210" type ="redEnemy"/>
+	<entity x="630"  y="210" type ="redEnemy"/>
+	
+	<entity x="-800" y="-800" type="levelComplete"/>
+	
 </level>

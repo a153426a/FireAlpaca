@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <level width="800" height="480">    
-	<entity x="410"  y="30" type ="player"/>
-	<entity x="380"  y="40" type ="base"/>
+	<entity x="770"  y="450" type ="player"/>
 	<!-- Frame -->
 	<entity x="10" y="10" type="stone"/>
 	<entity x="30" y="10" type="stone"/>
@@ -299,14 +298,15 @@
 	<entity x="630" y="250" type="blueEnemy"/>
 	<entity x="730" y="250" type="blueEnemy"/>
 	
-	<entity x="190" y="430" type="yellowEnemy"/>
-	<entity x="350" y="430" type="yellowEnemy"/>
-	<entity x="510" y="430" type="yellowEnemy"/>
-	<entity x="670" y="430" type="yellowEnemy"/>
 	<entity x="110" y="430" type="yellowEnemy"/>
+	<entity x="190" y="30" type="yellowEnemy"/>
 	<entity x="270" y="430" type="yellowEnemy"/>
+	<entity x="350" y="30" type="yellowEnemy"/>
 	<entity x="430" y="430" type="yellowEnemy"/>
+	<entity x="510" y="30" type="yellowEnemy"/>
 	<entity x="590" y="430" type="yellowEnemy"/>
-    
-    <entity x="750" y="60" type = "levelComplete"/>
+	<entity x="670" y="30" type="yellowEnemy"/>
+
+	<entity x="-800" y="-800" type="levelComplete"/>
+	
 </level>

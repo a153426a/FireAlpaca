@@ -248,14 +248,18 @@
 	<entity x="490" y="410" type="stone"/>
 	
 	<!-- Enemy -->
+	<entity x="290" y="30" type="redEnemy"/>
 	<entity x="330" y="30" type="redEnemy"/>
 	<entity x="370" y="30" type="redEnemy"/>
 	<entity x="410" y="30" type="redEnemy"/>
 	<entity x="450" y="30" type="redEnemy"/>
+	<entity x="490" y="30" type="redEnemy"/>
+	<entity x="290" y="450" type="redEnemy"/>
 	<entity x="330" y="450" type="redEnemy"/>
 	<entity x="370" y="450" type="redEnemy"/>
 	<entity x="410" y="450" type="redEnemy"/>
 	<entity x="450" y="450" type="redEnemy"/>
+	<entity x="490" y="450" type="redEnemy"/>
 	<entity x="170" y="130" type="yellowEnemy"/>
 	<entity x="170" y="190" type="yellowEnemy"/>
 	<entity x="170" y="270" type="yellowEnemy"/>
@@ -362,6 +366,7 @@
 	<entity x="750" y="410" type="coin"/>
 	<entity x="750" y="430" type="coin"/>
 	<entity x="750" y="450" type="coin"/>
+	
+	<entity x="-800" y="-800" type="levelComplete"/>
     
-    <entity x="750" y="60" type = "levelComplete"/>
 </level>

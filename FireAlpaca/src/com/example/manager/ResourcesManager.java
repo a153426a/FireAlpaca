@@ -16,6 +16,7 @@ import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.texture.region.TextureRegion;
+import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.debug.Debug;
 
@@ -48,6 +49,7 @@ public class ResourcesManager {
 	public Font font;
 	
 	
+	
 	//game scene texture regions
 	public BuildableBitmapTextureAtlas gameTextureAtlas;
 	public ITextureRegion game_background_region;
@@ -63,11 +65,31 @@ public class ResourcesManager {
 	public ITiledTextureRegion player_region;
 	public ITiledTextureRegion complete_stars_region;
 	
+	//login region
+	public BuildableBitmapTextureAtlas loginTextureAtlas;
+	public TiledTextureRegion password_region;
+	public TiledTextureRegion user_region;
+	public ITextureRegion login_region;
+	public ITextureRegion register_region;
+	
+
+	
 	//enemy region
 	public ITiledTextureRegion red_enemy_region;
 	public ITiledTextureRegion blue_enemy_region;
 	public ITiledTextureRegion yellow_enemy_region;
 	
+	//selector region 
+	public ITextureRegion selector_background_region;
+	public ITextureRegion one_region;
+	public ITextureRegion two_region;
+	public ITextureRegion three_region;
+	public ITextureRegion four_region;
+	public ITextureRegion five_region;
+	public ITextureRegion six_region;
+	public ITextureRegion seven_region;
+	public ITextureRegion eight_region;
+	private BuildableBitmapTextureAtlas selectorTextureAtlas;
 	
 	//on screen analog control
 	public BitmapTextureAtlas analogControlTextureAtlas;
@@ -99,6 +121,68 @@ public class ResourcesManager {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	
+	
+	
+	public void loadLoginScreen() {
+		loadLoginGraphics();
+		loadMenuFonts();
+	}
+	
+	public void loadSelectorScene() {
+		loadSelectorGraphics();
+	}
+
+	private void loadSelectorGraphics() {
+		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/select/");
+		selectorTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1024, 1024, TextureOptions.BILINEAR);
+		selector_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(selectorTextureAtlas, activity, "selector_background.png");
+		one_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(selectorTextureAtlas, activity, "1.png");
+		two_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(selectorTextureAtlas, activity, "2.png");
+		three_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(selectorTextureAtlas, activity, "3.png");
+		four_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(selectorTextureAtlas, activity, "4.png");
+		five_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(selectorTextureAtlas, activity, "5.png");
+		six_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(selectorTextureAtlas, activity, "6.png");
+		seven_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(selectorTextureAtlas, activity, "7.png");
+		eight_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(selectorTextureAtlas, activity, "8.png");
+		
+		try {
+			this.selectorTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
+			this.selectorTextureAtlas.load();
+		}
+		catch (final TextureAtlasBuilderException e) {
+			Debug.e(e);
+		}
+	}
+	
+	public void loadSelectorAtlas() {
+		this.selectorTextureAtlas.load();
+	}
+	
+	public void unloadSelectorAtlas() {
+		this.selectorTextureAtlas.unload();
+	}
+
+	private void loadLoginGraphics() {
+		
+		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/login/");
+		loginTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1024, 1024, TextureOptions.BILINEAR);
+		user_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(loginTextureAtlas, activity, "blank.png", 1, 1);
+		password_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(loginTextureAtlas, activity, "blank.png", 1, 1);
+		login_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(loginTextureAtlas, activity, "login.png");
+		register_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(loginTextureAtlas, activity, "register.png");
+		
+		try {
+			this.loginTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
+			this.loginTextureAtlas.load();
+		}
+		catch (final TextureAtlasBuilderException e) {
+			Debug.e(e);
+		}
+
+		
+	}
 
 	private void loadGameGraphics() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
@@ -116,7 +200,6 @@ public class ResourcesManager {
 		red_enemy_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "red_enemy.png", 3, 1); 
 		blue_enemy_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "blue_enemy.png", 3, 1);
 		yellow_enemy_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "yellow_enemy.png", 3, 1); 
-		
 
 		complete_window_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "levelComplete.png");
 		complete_stars_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "star.png", 2, 1);
@@ -166,6 +249,7 @@ public class ResourcesManager {
 		
 	}
 	
+
 	public void loadSplashScreen() { 
 		
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/"); 
@@ -179,6 +263,11 @@ public class ResourcesManager {
 		
 		splashTextureAtlas.unload(); 
 		splash_region = null; 
+		
+	}
+	
+	public void unloadLoginScene() {
+		loginTextureAtlas.unload(); 
 		
 	}
 	
@@ -215,8 +304,12 @@ public class ResourcesManager {
 		
 	}
 	
+	
 	public void unloadGameTextures() {
 		
 	}
+	
+	
+	
 	
 }

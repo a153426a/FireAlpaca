@@ -30,13 +30,6 @@
 		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>assets/gfx/menu/menu_background.png</name>
-			<type>1</type>
-			<locationURI>copy_PROJECT_LOC/assets/menu/menu_background.png</locationURI>
-		</link>
-	</linkedResources>
 	<variableList>
 		<variable>
 			<name>copy_PROJECT_LOC</name>

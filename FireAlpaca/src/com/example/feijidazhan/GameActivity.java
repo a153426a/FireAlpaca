@@ -13,6 +13,7 @@ import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.scene.Scene;
 import org.andengine.ui.activity.BaseGameActivity;
 
+import android.util.Log;
 import android.view.KeyEvent;
 
 import com.example.manager.ResourcesManager;
@@ -59,7 +60,7 @@ public class GameActivity extends BaseGameActivity {
 	            public void onTimePassed(final TimerHandler pTimerHandler) 
 	            {
 	                mEngine.unregisterUpdateHandler(pTimerHandler);
-	                SceneManager.getInstance().createMenuScene();
+	                SceneManager.getInstance().createLoginScene();
 	            }
 	    }));
 	    pOnPopulateSceneCallback.onPopulateSceneFinished();

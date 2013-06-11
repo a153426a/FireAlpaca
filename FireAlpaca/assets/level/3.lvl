@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <level width="800" height="480">    
 	<entity x="30"  y="30" type ="player"/>
-	<entity x="770"  y="450" type ="flag"/>
+	<entity x="770"  y="210" type ="flag"/>
 	<!-- Frame -->
 	<entity x="10" y="10" type="stone"/>
 	<entity x="30" y="10" type="stone"/>
@@ -258,15 +258,16 @@
 	<entity x="270" y="270" type="blueEnemy"/>
 	<entity x="330" y="330" type="blueEnemy"/>
 	<entity x="390" y="390" type="blueEnemy"/>
-	<entity x="610" y="350" type="blueEnemy"/>
+	<entity x="630" y="350" type="blueEnemy"/>
 	<entity x="530" y="450" type="yellowEnemy"/>
-	<entity x="670" y="290" type="yellowEnemy"/>
+	<entity x="690" y="290" type="yellowEnemy"/>
 	
 	<!-- Coins -->
 	<entity x="170" y="90" type="coin"/>
     <entity x="290" y="210" type="coin"/>
     <entity x="410" y="330" type="coin"/>
     <entity x="750" y="310" type="coin"/>
+	
+	<entity x="-800" y="-800" type="levelComplete"/>
     
-    <entity x="750" y="60" type = "levelComplete"/>
 </level>
