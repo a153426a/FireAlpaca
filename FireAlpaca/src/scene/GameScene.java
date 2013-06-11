@@ -429,7 +429,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 									super.onManagedUpdate(pSecondsElapsed);
 									
 									if(level == 2 || level == 6) { 
-										//TODO
+										enemy_shoot(400, 40); 
+									} else { 
+										enemy_shoot(player.getX(), player.getY()); 
 									}
 									
 									if ((level == 1 || level == 5)
@@ -1095,8 +1097,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 			Enemy enemy = (Enemy) enemies.get(body);
 			
 			float xD, yD, xV, yV; 
-			xD = player.getX() - x; 
-			yD = player.getY() - y; 
+			xD = x - enemy.getX(); 
+			yD = y - enemy.getY(); 
 			
 			if(xD >= 0) { 
 				xV = xD*xD/(xD*xD + yD*yD);
