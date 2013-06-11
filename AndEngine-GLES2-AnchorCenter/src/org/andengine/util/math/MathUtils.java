@@ -397,6 +397,14 @@ public final class MathUtils {
 		return (pXA * pYB) - (pXB * pYA);
 	}
 
+	public static final int factorial(final int n) {
+		int result = 1;
+		for (int i = 1; i <= n; i++) {
+			result *= i;
+		}
+		return result;
+	}
+
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================

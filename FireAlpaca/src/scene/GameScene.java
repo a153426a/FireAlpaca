@@ -697,6 +697,43 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 							enemies.put(enemy.get_body(), enemy);
 							map[(x - 10) / 20][(y - 10) / 20] = Map.ENEMY;
 						}
+						
+						else if (type
+								.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BOSS)) {
+							Enemy enemy = new Enemy(x, y, vbom, camera,
+									physicsWorld, ResourcesManager
+											.getInstance().boss_region,
+									player) {
+								@Override
+								public void onDie() {
+									addToScore(1000);
+
+									map[(int) ((this.getX() - 10) / 20)][(int) ((this
+											.getY() - 10) / 20)] = null;
+								}
+
+								@Override
+								public void enemy_shoot() {
+									if (CoolDown.getSharedInstance()
+											.checkValidity()) {
+
+										Bullet bullet = new Bullet(
+												this.getX() + 10,
+												this.getY() + 10, vbom, camera,
+												physicsWorld, "enemy_bullet");
+										attachChild(bullet);
+										enemy_bullets.put(
+												bullet.bullet_get_body(),
+												bullet);
+										bullet.bullet_get_body()
+												.setLinearVelocity(20, 20);
+									}
+								}
+							};
+							levelObject = enemy;
+							enemies.put(enemy.get_body(), enemy);
+							map[(x - 10) / 20][(y - 10) / 20] = Map.ENEMY;
+						}
 
 						else if (type
 								.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_YELLOW_ENEMY)) {
@@ -738,12 +775,15 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 						else {
 							throw new IllegalArgumentException();
 						}
+						
+						
 
 						levelObject.setCullingEnabled(true);
 
 						return levelObject;
 					}
 				});
+		
 
 		levelLoader.loadLevelFromAsset(activity.getAssets(), "level/" + levelID
 				+ ".lvl");

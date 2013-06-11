@@ -78,6 +78,7 @@ public class ResourcesManager {
 	public ITiledTextureRegion red_enemy_region;
 	public ITiledTextureRegion blue_enemy_region;
 	public ITiledTextureRegion yellow_enemy_region;
+	public ITiledTextureRegion boss_region;
 	
 	//selector region 
 	public ITextureRegion selector_background_region;
