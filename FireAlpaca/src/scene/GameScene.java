@@ -428,6 +428,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 										float pSecondsElapsed) {
 									super.onManagedUpdate(pSecondsElapsed);
 									
+									if(level == 2 || level == 6) { 
+										//TODO
+									}
+									
 									if ((level == 1 || level == 5)
 											&& enemies.isEmpty()) {
 										if (score > 100 && score < 200) {
@@ -1082,6 +1086,37 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 		player_bullets.put(bullet.bullet_get_body(), bullet);
 		bullet.bullet_get_body().setLinearVelocity(xVel * 20, yVel * 20);
 	}
+	
+	public void enemy_shoot(float x, float y) {
+		
+		Iterator it = enemies.entrySet().iterator(); 
+		while(it.hasNext()) { 
+			Body body = (Body) it.next(); 
+			Enemy enemy = (Enemy) enemies.get(body);
+			
+			float xD, yD, xV, yV; 
+			xD = player.getX() - x; 
+			yD = player.getY() - y; 
+			
+			if(xD >= 0) { 
+				xV = xD*xD/(xD*xD + yD*yD);
+			} else { 
+				xV = -xD*xD/(xD*xD + yD*yD);
+			}
+			
+			if(yD >= 0) { 
+				yV = yD*yD/(xD*xD + yD*yD); 
+			} else { 
+				yV = -yD*yD/(xD*xD + yD*yD); 
+			}
+			
+			Bullet bullet = new Bullet(enemy.getX() + 10*xV, enemy.getY() + 10*yV, vbom, camera, physicsWorld, "enemy_bullet");
+			attachChild(bullet);
+			enemy_bullets.put(bullet.bullet_get_body(), bullet);
+			bullet.bullet_get_body().setLinearVelocity(xV * 20, yV * 20);
+		}
+			
+	}
 
 	public void delete_entity() {
 		Iterator<Body> list = physicsWorld.getBodies();
@@ -1094,7 +1129,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 						.findPhysicsConnectorByShape(player));
 				physicsWorld.destroyBody(currentBody);
 				detachChild(player);
-				;
+				
 			} else if (currentBody.getUserData()
 					.equals("player_bullet_deleted")) {
 				Bullet b = (Bullet) player_bullets.get(currentBody);
