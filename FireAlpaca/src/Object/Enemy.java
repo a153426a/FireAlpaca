@@ -153,15 +153,26 @@ public abstract class Enemy extends AnimatedSprite{
 	private void enemy_move(Body body)
 	{	
 
-			if (checkShoot()) {
-				//enemy_shoot();
+		if(SceneManager.getInstance().getLevel() == 2 || SceneManager.getInstance().getLevel() == 6) {
+			float x, y, xV, yV; 
+			x = 400 - getX(); 
+			y = 40 - getY(); 
+			if(x >= 0) { 
+				xV = x*x/(x*x + y*y);  
+			} else { 
+				xV = -x*x/(x*x + y*y);  
 			}
-	
-		
-		/*if (enemy_collide()){
-				//deal with collision
-		}*/
-		enemy_random_move(body);
+			
+			if(y >= 0) { 
+				yV = y*y/(x*x + y*y);
+			} else { 
+				yV = -y*y/(x*x + y*y);
+			}
+			
+			body.setLinearVelocity(xV*4, yV*4);
+		} else { 
+			enemy_random_move(body);
+		}
 		
 	}
 	
