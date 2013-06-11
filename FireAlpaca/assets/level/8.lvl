@@ -198,7 +198,7 @@
 	<entity x="570"  y="370" type ="redEnemy"/>
 	<entity x="590"  y="370" type ="redEnemy"/>
 	<entity x="610"  y="370" type ="redEnemy"/>
-	<entity x="630"  y="370" type ="redEnemy
+	<entity x="630"  y="370" type ="redEnemy"/>
 	
 	<entity x="170"  y="290" type ="redEnemy"/>
 	<entity x="190"  y="290" type ="redEnemy"/>

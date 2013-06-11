@@ -589,7 +589,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 										
 										this.setVisible(false);
 										this.setIgnoreUpdate(true);
-									} else if (level == 8) {
+									} else if (level == 8 && enemies.isEmpty()) {
 										if (score > 100 && score < 200) {
 											levelCompleteWindow.display(
 													StarsCount.TWO,
