@@ -3,6 +3,7 @@ package scene;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.hud.HUD;
@@ -66,6 +67,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	private boolean isLevelComplete = false;
 	private boolean firstTouch = false;
 	private boolean baseDestoryed = false;
+	private boolean introDisplaying = true; 
+	private int base_health = 20;
 
 	// game graphic fields
 	private static final String TAG_ENTITY = "entity";
@@ -84,27 +87,20 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BASE = "base";
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_FLAG = "flag";
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BOSS = "boss";
-	private Player player;
-	public int bulletCount;
+	public Player player;
 
 	// many many many hashMaps
-	private HashMap enemies;
+	private Map<Body, Enemy> enemies;
 	private HashMap player_bullets;
 	private HashMap breakables;
 	private HashMap enemy_bullets;
 
-	// Enum for enemy AI
-	public enum Map {
-		BREAKABLE, STONE, COIN, BASE, FLAG, ENEMY, EMPTY
-	}
-
-	// (gigantic?) matrix field for enemy AI.
-	public Map[][] map;
 
 	private Text gameOverText;
 	private Text intro;
 	private LevelCompleteWindow levelCompleteWindow;
 	private boolean gameOverDisplayed = false;
+	public int bulletCounter; 
 
 	// analog on screen control
 	private AnalogOnScreenControl analogLeftControl;
@@ -112,13 +108,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
 	@Override
 	public void createScene(int lv) {
-		enemies = new HashMap();
-		map = new Map[40][24];
-		for (int i = 0; i < 39; i++) {
-			for (int j = 0; j < 23; j++) {
-				map[i][j] = Map.EMPTY;
-			}
-		}
+		enemies = new HashMap<Body, Enemy>();
+
 		breakables = new HashMap();
 		player_bullets = new HashMap();
 		enemy_bullets = new HashMap();
@@ -343,7 +334,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 							PhysicsFactory.createBoxBody(physicsWorld,
 									levelObject, BodyType.StaticBody,
 									FIXTURE_DEF).setUserData("stone");
-							map[(x - 10) / 20][(y - 10) / 20] = Map.STONE;
 
 						} else if (type
 								.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BREAKABLE)) {
@@ -354,7 +344,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 									BodyType.StaticBody, FIXTURE_DEF);
 							body.setUserData("breakable");
 							breakables.put(body, levelObject);
-							map[(x - 10) / 20][(y - 10) / 20] = Map.BREAKABLE;
 						}
 
 						else if (type
@@ -398,7 +387,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 							levelObject
 									.registerEntityModifier(new LoopEntityModifier(
 											new ScaleModifier(1, 1, 1.3f)));
-							map[(x - 10) / 20][(y - 10) / 20] = Map.COIN;
 						}
 
 						else if (type
@@ -427,12 +415,18 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 								protected void onManagedUpdate(
 										float pSecondsElapsed) {
 									super.onManagedUpdate(pSecondsElapsed);
+									/*if(bulletCounter<60) {
+										bulletCounter++; 
+									} else { 
+										bulletCounter = 1;
+									}
 									
+									if(bulletCounter == 1) { 
 									if(level == 2 || level == 6) { 
 										enemy_shoot(400, 40); 
 									} else { 
 										enemy_shoot(player.getX(), player.getY()); 
-									}
+									}}*/
 									
 									if ((level == 1 || level == 5)
 											&& enemies.isEmpty()) {
@@ -634,148 +628,66 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 								.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_RED_ENEMY)) {
 							Enemy enemy = new Enemy(x, y, vbom, camera,
 									physicsWorld, ResourcesManager
-											.getInstance().red_enemy_region,
-									player) {
+											.getInstance().red_enemy_region) {
 								@Override
 								public void onDie() {
 									addToScore(100);
-									map[(int) ((this.getX() - 10) / 20)][(int) ((this
-											.getY() - 10) / 20)] = null;
 								}
 
-								@Override
-								public void enemy_shoot() {
-									if (CoolDown.getSharedInstance()
-											.checkValidity()) {
-										int a = 1, b = 1;
-										Bullet bullet = new Bullet(this.getX()
-												+ 10 * a, this.getY() + 10 * b,
-												vbom, camera, physicsWorld,
-												"enemy_bullet");
-										attachChild(bullet);
-										enemy_bullets.put(
-												bullet.bullet_get_body(),
-												bullet);
-										bullet.bullet_get_body()
-												.setLinearVelocity(20, 20);
-									}
-								}
+							
 
 							};
 							levelObject = enemy;
 							enemies.put(enemy.get_body(), enemy);
-							map[(x - 10) / 20][(y - 10) / 20] = Map.ENEMY;
 						}
 
 						else if (type
 								.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BLUE_ENEMY)) {
 							Enemy enemy = new Enemy(x, y, vbom, camera,
 									physicsWorld, ResourcesManager
-											.getInstance().blue_enemy_region,
-									player) {
+											.getInstance().blue_enemy_region) {
 								@Override
 								public void onDie() {
 									addToScore(30);
 
-									map[(int) ((this.getX() - 10) / 20)][(int) ((this
-											.getY() - 10) / 20)] = null;
 								}
 
-								@Override
-								public void enemy_shoot() {
-									if (CoolDown.getSharedInstance()
-											.checkValidity()) {
-
-										Bullet bullet = new Bullet(
-												this.getX() + 10,
-												this.getY() + 10, vbom, camera,
-												physicsWorld, "enemy_bullet");
-										attachChild(bullet);
-										enemy_bullets.put(
-												bullet.bullet_get_body(),
-												bullet);
-										bullet.bullet_get_body()
-												.setLinearVelocity(20, 20);
-									}
-								}
+								
 							};
 							levelObject = enemy;
 							enemies.put(enemy.get_body(), enemy);
-							map[(x - 10) / 20][(y - 10) / 20] = Map.ENEMY;
 						}
 						
 						else if (type
 								.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BOSS)) {
 							Enemy enemy = new Enemy(x, y, vbom, camera,
 									physicsWorld, ResourcesManager
-											.getInstance().boss_region,
-									player) {
+											.getInstance().boss_region) {
 								@Override
 								public void onDie() {
 									addToScore(1000);
-
-									map[(int) ((this.getX() - 10) / 20)][(int) ((this
-											.getY() - 10) / 20)] = null;
 								}
 
-								@Override
-								public void enemy_shoot() {
-									if (CoolDown.getSharedInstance()
-											.checkValidity()) {
-
-										Bullet bullet = new Bullet(
-												this.getX() + 10,
-												this.getY() + 10, vbom, camera,
-												physicsWorld, "enemy_bullet");
-										attachChild(bullet);
-										enemy_bullets.put(
-												bullet.bullet_get_body(),
-												bullet);
-										bullet.bullet_get_body()
-												.setLinearVelocity(20, 20);
-									}
-								}
 							};
 							levelObject = enemy;
 							enemies.put(enemy.get_body(), enemy);
-							map[(x - 10) / 20][(y - 10) / 20] = Map.ENEMY;
 						}
 
 						else if (type
 								.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_YELLOW_ENEMY)) {
 							Enemy enemy = new Enemy(x, y, vbom, camera,
 									physicsWorld, ResourcesManager
-											.getInstance().yellow_enemy_region,
-									player) {
+											.getInstance().yellow_enemy_region) {
 								@Override
 								public void onDie() {
 									addToScore(50);
-
-									map[(int) ((this.getX() - 10) / 20)][(int) ((this
-											.getY() - 10) / 20)] = null;
 								}
 
-								@Override
-								public void enemy_shoot() {
-									if (CoolDown.getSharedInstance()
-											.checkValidity()) {
-										int a, b;
-										Bullet bullet = new Bullet(
-												this.getX() + 10,
-												this.getY() + 10, vbom, camera,
-												physicsWorld, "enemy_bullet");
-										attachChild(bullet);
-										enemy_bullets.put(
-												bullet.bullet_get_body(),
-												bullet);
-										bullet.bullet_get_body()
-												.setLinearVelocity(20, 20);
-									}
-								}
+								
+								
 							};
 							levelObject = enemy;
 							enemies.put(enemy.get_body(), enemy);
-							map[(x - 10) / 20][(y - 10) / 20] = Map.ENEMY;
 						}
 
 						else {
@@ -949,20 +861,86 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 						x2.getBody().setUserData("yellow_enemy_deleted");
 					}
 				}
+				
 
-				// when player bullet collide with anything else it just
-				// disappear
-				/*
-				 * else if (x2.getBody().getUserData().equals("player_bullet"))
-				 * { x2.getBody().setUserData("player_bullet_deleted"); }
-				 */
+				// bullet & yellowEnemy
+				else if (x1.getBody().getUserData().equals("boss")
+						&& x2.getBody().getUserData().equals("player_bullet")) {
+					x2.getBody().setUserData("player_bullet_deleted");
+					Enemy e = (Enemy) enemies.get(x1.getBody());
+					float health = e.get_health();
+					// TODO: shop feature: change 1 to player attack value later
+					if (health > 1) {
+						e.set_health(health - 1);
+					} else {
+						x1.getBody().setUserData("boss_deleted");
+					}
+				}
+				
+				else if (x2.getBody().getUserData().equals("boss")
+						&& x1.getBody().getUserData().equals("player_bullet")) {
+					x1.getBody().setUserData("player_bullet_deleted");
+					Enemy e = (Enemy) enemies.get(x2.getBody());
+					float health = e.get_health();
+					// TODO: shop feature: change 1 to player attack value later
+					if (health > 1) {
+						e.set_health(health - 1);
+					} else {
+						x2.getBody().setUserData("boss_deleted");
+					}
+				}
 
+				//player bullet with base
+				else if (x2.getBody().getUserData().equals("base")
+						&& x1.getBody().getUserData().equals("player_bullet")) {
+					x1.getBody().setUserData("player_bullet_deleted");
+					
+				}
+				
+				else if (x1.getBody().getUserData().equals("base")
+						&& x2.getBody().getUserData().equals("player_bullet")) {
+					x2.getBody().setUserData("player_bullet_deleted");
+					
+				}
+				
+				//player bullet & coin
+				else if (x1.getBody().getUserData().equals("coin")
+						&& x2.getBody().getUserData().equals("player_bullet")) {
+					x2.getBody().setUserData("player_bullet_deleted");
+				}
+				
+				else if (x2.getBody().getUserData().equals("coin")
+						&& x1.getBody().getUserData().equals("player_bullet")) {
+					x1.getBody().setUserData("player_bullet_deleted");
+				}
+				
+				//player bullet & enemy bullet
+				else if (x2.getBody().getUserData().equals("enemy_bullet")
+						&& x1.getBody().getUserData().equals("player_bullet")) {
+					x1.getBody().setUserData("player_bullet_deleted");
+					x2.getBody().setUserData("enemy_bullet_deleted");
+				}
+				
+				else if (x1.getBody().getUserData().equals("enemy_bullet")
+						&& x2.getBody().getUserData().equals("player_bullet")) {
+					x2.getBody().setUserData("player_bullet_deleted");
+					x1.getBody().setUserData("enemy_bullet_deleted");
+				}
+				
+				
 				// enemy bullet with enemy
 				else if ((x2.getBody().getUserData().equals("blueEnemy")
 						|| x2.getBody().getUserData().equals("redEnemy") || x2
-						.getBody().getUserData().equals("yellowEnemy"))
+						.getBody().getUserData().equals("yellowEnemy")||x2.getBody().getUserData().equals("boss"))
 						&& x1.getBody().getUserData().equals("enemy_bullet")) {
-					x2.getBody().setUserData("enemy_bullet");
+					//x1.getBody().setUserData("enemy_bullet_deleted");
+				}
+				
+				else if ((x1.getBody().getUserData().equals("blueEnemy")
+						|| x1.getBody().getUserData().equals("redEnemy") || x1
+						.getBody().getUserData().equals("yellowEnemy")||x1.getBody().getUserData().equals("boss"))
+						&& x2.getBody().getUserData().equals("enemy_bullet")) {
+					//x2.getBody().setUserData("enemy_bullet_deleted");
 				}
 
 				// enemy bullet & breakable
@@ -971,15 +949,42 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 					x1.getBody().setUserData("breakable_deleted");
 					x2.getBody().setUserData("enemy_bullet_deleted");
 				}
+				
+				else if (x2.getBody().getUserData().equals("breakable")
+						&& x1.getBody().getUserData().equals("enemy_bullet")) {
+					x2.getBody().setUserData("breakable_deleted");
+					x1.getBody().setUserData("enemy_bullet_deleted");
+				}
+
 
 				// enemy bullet & unbreakable stone
 				else if (x1.getBody().getUserData().equals("stone")
 						&& x2.getBody().getUserData().equals("enemy_bullet")) {
 
 					x2.getBody().setUserData("enemy_bullet_deleted");
-
 				}
+				
+				else if (x2.getBody().getUserData().equals("stone")
+						&& x1.getBody().getUserData().equals("enemy_bullet")) {
 
+					x1.getBody().setUserData("enemy_bullet_deleted");
+				}
+				
+
+				
+				// enemy bullet & flag
+				else if (x1.getBody().getUserData().equals("flag")
+						&& x2.getBody().getUserData().equals("enemy_bullet")) {
+
+					x2.getBody().setUserData("enemy_bullet_deleted");
+				}
+				
+				else if (x2.getBody().getUserData().equals("flag")
+						&& x1.getBody().getUserData().equals("enemy_bullet")) {
+
+					x1.getBody().setUserData("enemy_bullet_deleted");
+				}
+				
 				// enemy bullet & player
 				else if (x1.getBody().getUserData().equals("player")
 						&& x2.getBody().getUserData().equals("enemy_bullet")) {
@@ -992,45 +997,48 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 					x2.getBody().setUserData("enemy_bullet_deleted");
 
 				}
+				
+				else if (x2.getBody().getUserData().equals("player")
+						&& x1.getBody().getUserData().equals("enemy_bullet")) {
+					float health = player.getHealth();
+					if (health > 1) {
+						player.setHealth(health - 1);
+					} else {
+						x2.getBody().setUserData("player_dead");
+					}
+					x1.getBody().setUserData("enemy_bullet_deleted");
 
+				}
+				
+				// enemy bullet & base
+				else if (x1.getBody().getUserData().equals("base")
+						&& x2.getBody().getUserData().equals("enemy_bullet")) {
+					if (base_health > 1) {
+						base_health-=1;
+					} else {
+						player.getBody().setUserData("player_dead");
+					}
+					x2.getBody().setUserData("enemy_bullet_deleted");
+
+				}
+				
+				else if (x2.getBody().getUserData().equals("base")
+						&& x1.getBody().getUserData().equals("enemy_bullet")) {
+					if (base_health > 1) {
+						base_health-=1;
+					} else {
+						player.getBody().setUserData("player_dead");
+					}
+					x1.getBody().setUserData("enemy_bullet_deleted");
+
+				}
 			}
 
 			public void endContact(Contact contact) {
 				final Fixture x1 = contact.getFixtureA();
 				final Fixture x2 = contact.getFixtureB();
 
-				// stone + player bullet;
-				/*
-				 * if(x1.getBody().getUserData().equals("stone") &&
-				 * x2.getBody().getUserData().equals("player_bullet")) {
-				 * 
-				 * 
-				 * x2.getBody().setUserData("deleteStatus");
-				 * 
-				 * return; }
-				 */
-
-				// bullet & bullet
-				/*
-				 * else if(x1.getBody().getUserData().equals("player_bullet") &&
-				 * x2.getBody().getUserData().equals("player_bullet")) {
-				 * 
-				 * Bullet b1 = (Bullet) player_bullets.get(x1.getBody());
-				 * player_bullets.remove(x1.getBody());
-				 * b1.bullet_get_pw().unregisterPhysicsConnector
-				 * (physicsWorld.getPhysicsConnectorManager
-				 * ().findPhysicsConnectorByShape(b1));
-				 * b1.bullet_get_pw().destroyBody(x2.getBody());
-				 * detachChild(b1);
-				 * 
-				 * Bullet b2 = (Bullet) player_bullets.get(x2.getBody());
-				 * player_bullets.remove(x2.getBody());
-				 * b2.bullet_get_pw().unregisterPhysicsConnector
-				 * (physicsWorld.getPhysicsConnectorManager
-				 * ().findPhysicsConnectorByShape(b2));
-				 * b2.bullet_get_pw().destroyBody(x2.getBody());
-				 * detachChild(b2); return; }
-				 */
+				
 			}
 
 			@Override
@@ -1091,10 +1099,18 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	
 	public void enemy_shoot(float x, float y) {
 		
-		Iterator it = enemies.entrySet().iterator(); 
-		while(it.hasNext()) { 
-			Body body = (Body) it.next(); 
-			Enemy enemy = (Enemy) enemies.get(body);
+		//Iterator it = enemies.entrySet().iterator(); 
+
+		if(bulletCounter<60) { 
+			bulletCounter++; 
+		} else { 
+			bulletCounter = 1; 
+		}
+		
+		if(bulletCounter == 30) { 
+		for(Enemy enemy : enemies.values()) { 
+			//Body body = (Body) it.next(); 
+			
 			
 			float xD, yD, xV, yV; 
 			xD = x - enemy.getX(); 
@@ -1116,7 +1132,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 			attachChild(bullet);
 			enemy_bullets.put(bullet.bullet_get_body(), bullet);
 			bullet.bullet_get_body().setLinearVelocity(xV * 20, yV * 20);
-		}
+		}}
 			
 	}
 
@@ -1155,7 +1171,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
 			else if (currentBody.getUserData().equals("red_enemy_deleted")
 					|| currentBody.getUserData().equals("blue_enemy_deleted")
-					|| currentBody.getUserData().equals("yellow_enemy_deleted")) {
+					|| currentBody.getUserData().equals("yellow_enemy_deleted")||
+					currentBody.getUserData().equals("boss_deleted")) {
 				Enemy e = (Enemy) enemies.get(currentBody);
 				physicsWorld.unregisterPhysicsConnector(physicsWorld
 						.getPhysicsConnectorManager()
@@ -1188,6 +1205,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 		analogLeftControl.setIgnoreUpdate(true);
 		analogRightControl.setVisible(false);
 		analogLeftControl.setIgnoreUpdate(true);
+	}
+	
+	public boolean isFirstTouch() {
+		return firstTouch;
 	}
 
 }

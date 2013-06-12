@@ -192,8 +192,16 @@ public class SceneManager {
 			        	if (gameScene.isLevelComplete()) {
 							gameScene.deactivateControl();
 						}
+			        	else {
+			        	
+						if(level == 2 || level == 6) { 
+							gameScene.enemy_shoot(400, 40); 
+						} else { 
+							gameScene.enemy_shoot(gameScene.player.getX(), gameScene.player.getY()); 
+						}
+						
 			        	gameScene.delete_entity();
-			        }
+			        }}
 			    });
 				setScene(gameScene); 
 				
