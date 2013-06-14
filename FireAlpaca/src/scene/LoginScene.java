@@ -1,5 +1,7 @@
 package scene;
 
+import java.sql.SQLException;
+
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.scene.menu.MenuScene;
 import org.andengine.entity.scene.menu.MenuScene.IOnMenuItemClickListener;
@@ -10,13 +12,20 @@ import org.andengine.entity.text.Text;
 import org.andengine.ui.activity.BaseGameActivity;
 import org.andengine.util.adt.color.Color;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.example.base.BaseScene;
+import com.example.feijidazhan.R;
+import com.example.manager.DatabaseManager;
 import com.example.manager.ResourcesManager;
 import com.example.manager.SceneManager;
 import com.example.manager.SceneManager.SceneType;
 
+import extra.DialogCreater;
 import extra.InputText;
 
 public class LoginScene extends BaseScene implements IOnMenuItemClickListener{
@@ -24,6 +33,9 @@ public class LoginScene extends BaseScene implements IOnMenuItemClickListener{
 	private MenuScene menuChildScene;
 	private final int LOGIN = 0;
 	private final int REGISTER = 1;
+	
+	InputText user;
+	InputText password;
 	
 	@Override
 	public void createScene(int lv) {
@@ -40,8 +52,8 @@ public class LoginScene extends BaseScene implements IOnMenuItemClickListener{
 		Text password_text = new Text (-180, 0, resourcesManager.font, "Password", vbom);
 		password_text.setColor(Color.WHITE);
 		password_text.setScale(0.7f);
-		InputText password = new InputText(0, 0, "Password", "Enter password (within 10 characters)", ResourcesManager.getInstance().password_region, resourcesManager.font, 80, 20, vbom,  resourcesManager.activity);
-		InputText user = new InputText(0, 100, "User", "Enter User Name (within 10 characters)", ResourcesManager.getInstance().user_region, resourcesManager.font, 80, 20, vbom, resourcesManager.activity);
+		password = new InputText(0, 0, "Password", "Enter password (within 10 characters)", ResourcesManager.getInstance().password_region, resourcesManager.font, 80, 20, vbom,  resourcesManager.activity);
+		user = new InputText(0, 100, "Username", "Enter User Name (within 10 characters)", ResourcesManager.getInstance().user_region, resourcesManager.font, 80, 20, vbom, resourcesManager.activity);
 		password.setPassword(true);
 		registerTouchArea(password);
 		registerTouchArea(user);
@@ -75,14 +87,43 @@ public class LoginScene extends BaseScene implements IOnMenuItemClickListener{
 		return SceneType.SCENE_LOGIN;
 	}
 
-
+	
 	@Override
 	public boolean onMenuItemClicked(MenuScene pMenuScene, IMenuItem pMenuItem,
 			float pMenuItemLocalX, float pMenuItemLocalY) {
 		switch(pMenuItem.getID())
 		{
 		case LOGIN:
-			SceneManager.getInstance().createMenuScene(); 
+			if (user.getText()!= null &&password.getText()!=null){
+			if (DatabaseManager.getInstance().openConnection()) {
+			try {
+				if (DatabaseManager.getInstance().login(user.getText(), password.getText())){
+				SceneManager.getInstance().createMenuScene();}
+				else {
+					this.activity.runOnUiThread(new Runnable() {
+						public void run() {
+							msbox("Error", "Username does not exist or wrong password combination");
+						}
+					});
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} }
+			else {
+				this.activity.runOnUiThread(new Runnable() {
+					public void run() {
+						msbox("Warning", "No Connection");
+					}
+				});
+			}}
+			else {
+			
+				this.activity.runOnUiThread(new Runnable() {
+				    public void run() {
+				    	msbox("Warning","Please enter your username and password");
+				    }
+				});
+			}
 			return true;
 		case REGISTER:
 			SceneManager.getInstance().createRegisterScene();
@@ -93,9 +134,13 @@ public class LoginScene extends BaseScene implements IOnMenuItemClickListener{
 
 }
 
+	
+	
 	@Override
 	public void disposeScene() {
 		// TODO Auto-generated method stub
 		
 	}
+	
+
 }

@@ -7,7 +7,10 @@ import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.ui.activity.BaseGameActivity;
 
+import com.example.base.BaseScene;
 import com.example.feijidazhan.GameActivity;
+import com.example.manager.ResourcesManager;
+import com.example.manager.SceneManager;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -66,7 +69,11 @@ public class InputText extends ButtonSprite implements OnClickListener {
 			text = String.format("%0" + text.length() + "d", 0).replace("0", "*");
 		
 		if (text.length() >= 10) {
-		this.mText.setText(text.substring(0,10));}
+			ResourcesManager.getInstance().activity.runOnUiThread(new Runnable() {
+				public void run() {
+					SceneManager.getInstance().getCurrentScene().msbox("Warning", mTitle+" must be within 10 letters");
+				}
+			});}
 		else this.mText.setText(text);
 	}
 

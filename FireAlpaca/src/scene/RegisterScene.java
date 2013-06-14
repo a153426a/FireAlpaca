@@ -1,5 +1,7 @@
 package scene;
 
+import java.sql.SQLException;
+
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.scene.menu.MenuScene;
 import org.andengine.entity.scene.menu.MenuScene.IOnMenuItemClickListener;
@@ -10,6 +12,7 @@ import org.andengine.entity.text.Text;
 import org.andengine.util.adt.color.Color;
 
 import com.example.base.BaseScene;
+import com.example.manager.DatabaseManager;
 import com.example.manager.ResourcesManager;
 import com.example.manager.SceneManager;
 import com.example.manager.SceneManager.SceneType;
@@ -21,6 +24,11 @@ public class RegisterScene extends BaseScene implements IOnMenuItemClickListener
 
 	private MenuScene menuChildScene;
 	private final int REGISTER = 0;
+	private InputText user;
+	private InputText surname;
+	private InputText firstname;
+	private InputText password;
+	private InputText email;
 	
 	@Override
 	public void createScene(int lv) {
@@ -47,11 +55,11 @@ public class RegisterScene extends BaseScene implements IOnMenuItemClickListener
 		password_text.setScale(0.7f);
 		
 		
-		InputText user = new InputText(-130, 100, "User", "Enter User Name (within 10 characters)", ResourcesManager.getInstance().user_region, resourcesManager.font, 80, 20, vbom, resourcesManager.activity);
-		InputText surname = new InputText(-130, -100, "Surname", "Enter Your Surname (within 10 characters)", ResourcesManager.getInstance().user_region, resourcesManager.font, 80, 20, vbom,  resourcesManager.activity);
-		InputText firstname = new InputText(-130, 0, "Firstname", "Enter Your Firstname (within 10 characters)", ResourcesManager.getInstance().user_region, resourcesManager.font, 80, 20, vbom, resourcesManager.activity);
-		InputText email = new InputText(250, 100, "User", "Enter Youre Email (within 10 characters)", ResourcesManager.getInstance().user_region, resourcesManager.font, 80, 20, vbom, resourcesManager.activity);
-		InputText password = new InputText(250, 0, "User", "Enter User Name (within 10 characters)", ResourcesManager.getInstance().user_region, resourcesManager.font, 80, 20, vbom, resourcesManager.activity);
+		user = new InputText(-130, 100, "Username", "Enter User Name (within 10 characters)", ResourcesManager.getInstance().user_region, resourcesManager.font, 80, 20, vbom, resourcesManager.activity);
+		surname = new InputText(-130, -100, "Surname", "Enter Your Surname (within 10 characters)", ResourcesManager.getInstance().user_region, resourcesManager.font, 80, 20, vbom,  resourcesManager.activity);
+		firstname = new InputText(-130, 0, "Firstname", "Enter Your Firstname (within 10 characters)", ResourcesManager.getInstance().user_region, resourcesManager.font, 80, 20, vbom, resourcesManager.activity);
+		email = new InputText(250, 100, "Email", "Enter Youre Email (within 10 characters)", ResourcesManager.getInstance().user_region, resourcesManager.font, 80, 20, vbom, resourcesManager.activity);
+		password = new InputText(250, 0, "Password", "Enter User Name (within 10 characters)", ResourcesManager.getInstance().user_region, resourcesManager.font, 80, 20, vbom, resourcesManager.activity);
 		password.setPassword(true);
 		registerTouchArea(password);
 		registerTouchArea(user);
@@ -103,7 +111,21 @@ public class RegisterScene extends BaseScene implements IOnMenuItemClickListener
 		{
 		case REGISTER:
 			//Database thingy 
-			SceneManager.getInstance().createMenuScene(); 
+			try {
+				if (DatabaseManager.getInstance().register(user.getText(), firstname.getText(), surname.getText(), 
+						email.getText(), password.getText())) {
+				SceneManager.getInstance().createMenuScene(); }
+				else {
+					this.activity.runOnUiThread(new Runnable() {
+						public void run() {
+							msbox("Error", "Username alreaady exist");
+						}
+					});
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return true;
 		default:
 		return false;

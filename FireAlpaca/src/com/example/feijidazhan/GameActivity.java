@@ -22,7 +22,9 @@ import com.example.manager.SceneManager;
 public class GameActivity extends BaseGameActivity {
 	
 	private BoundCamera camera; 
-
+	
+	
+	
 	@Override
 	public EngineOptions onCreateEngineOptions() {
 		
