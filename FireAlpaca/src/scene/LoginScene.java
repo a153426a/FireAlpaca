@@ -94,11 +94,11 @@ public class LoginScene extends BaseScene implements IOnMenuItemClickListener{
 		switch(pMenuItem.getID())
 		{
 		case LOGIN:
-			if (user.getText()!= null &&password.getText()!=null){
-			if (DatabaseManager.getInstance().openConnection()) {
-			try {
-				if (DatabaseManager.getInstance().login(user.getText(), password.getText())){
-				SceneManager.getInstance().createMenuScene();}
+			//if (user.getText()!= null &&password.getText()!=null){
+			//if (DatabaseManager.getInstance().openConnection()) {
+			//try {
+			//	if (DatabaseManager.getInstance().login(user.getText(), password.getText())){
+				SceneManager.getInstance().createMenuScene(); /*}
 				else {
 					this.activity.runOnUiThread(new Runnable() {
 						public void run() {
@@ -123,7 +123,7 @@ public class LoginScene extends BaseScene implements IOnMenuItemClickListener{
 				    	msbox("Warning","Please enter your username and password");
 				    }
 				});
-			}
+			}*/
 			return true;
 		case REGISTER:
 			SceneManager.getInstance().createRegisterScene();

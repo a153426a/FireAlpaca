@@ -23,7 +23,7 @@ public abstract class Player extends AnimatedSprite {
 	private Body body; 
 	public abstract void onDie();
 	private float health;
-
+	public float total_health;
 	
 	public Player(float pX, float pY, VertexBufferObjectManager vbo, Camera camera, PhysicsWorld physicsWorld) {
 		
@@ -32,6 +32,7 @@ public abstract class Player extends AnimatedSprite {
 		final long[] PLAYER_ANIMATE = new long[] { 10, 1, 10 };    
 	    animate(PLAYER_ANIMATE, 0, 2, true);
 	    health = 10;
+	    total_health=health;
 	}
 	
 	private void createPhysics(final Camera camera, PhysicsWorld physicsWorld) {

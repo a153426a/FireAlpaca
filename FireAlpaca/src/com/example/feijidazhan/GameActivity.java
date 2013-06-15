@@ -1,5 +1,10 @@
 package com.example.feijidazhan;
 
+import multiSupport.ClientMessages;
+import multiSupport.ClientMessages.AddPointClientMessage;
+import multiSupport.ServerMessages;
+import multiSupport.ServerMessages.AddPointServerMessage;
+
 import org.andengine.engine.Engine;
 import org.andengine.engine.LimitedFPSEngine;
 import org.andengine.engine.camera.BoundCamera;
@@ -11,6 +16,8 @@ import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.WakeLockOptions;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.scene.Scene;
+import org.andengine.extension.multiplayer.protocol.adt.message.IMessage;
+import org.andengine.extension.multiplayer.protocol.util.MessagePool;
 import org.andengine.ui.activity.BaseGameActivity;
 
 import android.util.Log;
@@ -94,5 +101,7 @@ public class GameActivity extends BaseGameActivity {
 		}
 		return false;
 	}
+	
+
 
 }

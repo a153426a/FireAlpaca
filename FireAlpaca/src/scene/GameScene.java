@@ -15,6 +15,7 @@ import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.LoopEntityModifier;
 import org.andengine.entity.modifier.ScaleModifier;
+import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.Sprite;
@@ -28,6 +29,7 @@ import org.andengine.input.touch.controller.MultiTouchController;
 import org.andengine.opengl.util.GLState;
 import org.andengine.util.SAXUtils;
 import org.andengine.util.adt.align.HorizontalAlign;
+import org.andengine.util.adt.color.Color;
 import org.andengine.util.level.EntityLoader;
 import org.andengine.util.level.constants.LevelConstants;
 import org.andengine.util.level.simple.SimpleLevelEntityLoaderData;
@@ -69,6 +71,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	private boolean baseDestoryed = false;
 	private boolean introDisplaying = true; 
 	private int base_health = 20;
+	private Rectangle health_bar;
 
 	// game graphic fields
 	private static final String TAG_ENTITY = "entity";
@@ -117,14 +120,14 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 		createBackground();
 		createLeftControl();
 		createRightControl();
-		createHUD();
 		createPhysics();
 		loadLevel(lv);
+		createHUD();
 		setOnSceneTouchListener(this);
 		createIntro();
-		displayIntroText();
 		createGameOverText();
 		levelCompleteWindow = new LevelCompleteWindow(vbom);
+		
 	}
 
 	private void createIntro() {
@@ -145,13 +148,26 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 			intro = new Text(0, 0, resourcesManager.font,
 					"Kill the Final Boss! ", vbom);
 		}
-
-	}
-
-	private void displayIntroText() {
+		
 		intro.setPosition(camera.getCenterX(), camera.getCenterY());
 		attachChild(intro);
+		
+		engine.registerUpdateHandler(new TimerHandler(
+				2f, new ITimerCallback() {
+
+					@Override
+					public void onTimePassed(
+							TimerHandler pTimerHandler) {
+						
+						intro.setVisible(false);
+						intro.detachSelf();
+
+					}
+
+				}));
+
 	}
+
 
 	public void createLeftControl() {
 		
@@ -225,7 +241,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	@Override
 	public SceneType getSceneType() {
 		// TODO Auto-generated method stub
-		return null;
+		return SceneType.SCENE_GAME;
 	}
 
 	@Override
@@ -253,13 +269,23 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
 		gameHUD = new HUD();
 
-		scoreText = new Text(20, 420, resourcesManager.font,
+		scoreText = new Text(20, 440, resourcesManager.font,
 				"Score: 0123456789", new TextOptions(HorizontalAlign.LEFT),
 				vbom);
 		scoreText.setAnchorCenter(0, 0);
 		scoreText.setText("Score: 0");
+		scoreText.setScale(0.7f);
 		gameHUD.attachChild(scoreText);
 		camera.setHUD(gameHUD);
+		
+		Text healthText = new Text(510, 460, resourcesManager.font, "Health:", vbom);
+		healthText.setScale(0.7f);
+		health_bar = new Rectangle(580, 470, (player.getHealth()-1)/player.total_health*200, 10, vbom);
+		health_bar.setAnchorCenterX(0);
+		health_bar.setColor(Color.GREEN);
+		
+		attachChild(healthText);
+		attachChild(health_bar);
 
 	}
 
@@ -415,18 +441,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 								protected void onManagedUpdate(
 										float pSecondsElapsed) {
 									super.onManagedUpdate(pSecondsElapsed);
-									/*if(bulletCounter<60) {
-										bulletCounter++; 
-									} else { 
-										bulletCounter = 1;
-									}
-									
-									if(bulletCounter == 1) { 
-									if(level == 2 || level == 6) { 
-										enemy_shoot(400, 40); 
-									} else { 
-										enemy_shoot(player.getX(), player.getY()); 
-									}}*/
+									health_bar.setWidth((player.getHealth()-1)/player.total_health*200);
 									
 									if ((level == 1 || level == 5)
 											&& enemies.isEmpty()) {
@@ -539,54 +554,29 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 										isLevelComplete = true;
 										this.setVisible(false);
 										this.setIgnoreUpdate(true);
-									} else if (level == 4) {
-										engine.registerUpdateHandler(new TimerHandler(
-												20f, new ITimerCallback() {
-
-													@Override
-													public void onTimePassed(
-															TimerHandler pTimerHandler) {
-														if (score > 100
-																&& score < 200) {
-															levelCompleteWindow
-																	.display(
-																			StarsCount.TWO,
-																			GameScene.this,
-																			camera);
-														} else if (score > 200) {
-															levelCompleteWindow
-																	.display(
-																			StarsCount.THREE,
-																			GameScene.this,
-																			camera);
-														} else {
-															levelCompleteWindow
-																	.display(
-																			StarsCount.ONE,
-																			GameScene.this,
-																			camera);
-														}
-														isLevelComplete = true;
-														SceneManager
-																.getInstance()
-																.incTotalScore(
-																		score);
-														SceneManager
-																.getInstance()
-																.incTotalCoin(
-																		coin);
-														if (level > maxLevel) {
-															SceneManager
-																	.getInstance()
-																	.setMaxLevel(
-																			level);
-														}
-
-													}
-
-												}));
-
-										
+									} else if (level == 4 && enemies.isEmpty()) {
+										if (score > 100 && score < 200) {
+											levelCompleteWindow.display(
+													StarsCount.TWO,
+													GameScene.this, camera);
+										} else if (score > 200) {
+											levelCompleteWindow.display(
+													StarsCount.THREE,
+													GameScene.this, camera);
+										} else {
+											levelCompleteWindow.display(
+													StarsCount.ONE,
+													GameScene.this, camera);
+										}
+										SceneManager.getInstance()
+												.incTotalScore(score);
+										SceneManager.getInstance()
+												.incTotalCoin(coin);
+										if (level > maxLevel) {
+											SceneManager.getInstance()
+													.setMaxLevel(level);
+										}
+										isLevelComplete = true;
 										this.setVisible(false);
 										this.setIgnoreUpdate(true);
 									} else if (level == 8 && enemies.isEmpty()) {
@@ -710,11 +700,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	@Override
 	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
 
-		if (pSceneTouchEvent.isActionDown() && !firstTouch) {
-			intro.setVisible(false);
-			intro.detachSelf();
-			firstTouch = true;
-		}
 
 		if (pSceneTouchEvent.isActionDown() && level == 4 && gameOverDisplayed) {
 			SceneManager.getInstance().setLevel(5);
@@ -753,7 +738,12 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 						|| x2.getBody().getUserData().equals("redEnemy") || x2
 						.getBody().getUserData().equals("yellowEnemy"))
 						&& x1.getBody().getUserData().equals("player")) {
-					x1.getBody().setUserData("player_dead");
+					float health = player.getHealth();
+					if (health > 1) {
+						player.setHealth(health - 1);
+					} else {
+						x1.getBody().setUserData("player_dead");
+					}
 				}
 
 				// stone + player bullet;
@@ -784,6 +774,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 						&& x2.getBody().getUserData().equals("player_bullet")) {
 					x1.getBody().setUserData("breakable_deleted");
 					x2.getBody().setUserData("player_bullet_deleted");
+					addToScore(10);
 				}
 				
 				
@@ -791,6 +782,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 						&& x1.getBody().getUserData().equals("player_bullet")) {
 					x2.getBody().setUserData("breakable_deleted");
 					x1.getBody().setUserData("player_bullet_deleted");
+					addToScore(10);
 				}
 
 				// bullet & redEnemy

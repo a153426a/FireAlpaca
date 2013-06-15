@@ -12,6 +12,7 @@ import scene.GameScene;
 import scene.LoadingScene;
 import scene.LoginScene;
 import scene.MainMenuScene;
+import scene.MultiScene;
 import scene.RegisterScene;
 import scene.SelectorScene;
 import scene.SplashScene;
@@ -31,6 +32,7 @@ public class SceneManager {
 	private BaseScene loginScene;
 	private BaseScene selectorScene;
 	private BaseScene registerScene;
+	private MultiScene multiScene;
 	private int level = 1; 
 	private int maxLevel = 8;
 	private int totalScore = 0; 
@@ -52,7 +54,7 @@ public class SceneManager {
 		SCENE_PROFILE,
 		SCENE_LOGIN, 
 		SCENE_SELECTOR,
-		SCENE_REGISTER,
+		SCENE_REGISTER, SCENE_MULTI,
 	}
 	
 	public void setScene(BaseScene scene) { 
@@ -91,8 +93,11 @@ public class SceneManager {
 		
 		case SCENE_REGISTER:
 			setScene(registerScene);
-		}
 		
+		case SCENE_MULTI:
+			setScene(multiScene);
+		
+		}
 	}
 	
 	public static SceneManager getInstance() { 
@@ -211,6 +216,39 @@ public class SceneManager {
 		
 	}
 
+public void loadMultiScene(final Engine mEngine) {
+		
+		ResourcesManager.getInstance().unloadMenuTextures();
+		setScene(loadingScene); 
+		mEngine.registerUpdateHandler(new TimerHandler(0.1f, new ITimerCallback() { 
+			
+			public void onTimePassed(final TimerHandler pTimerHandler) { 
+				
+				mEngine.unregisterUpdateHandler(pTimerHandler); 
+				ResourcesManager.getInstance().loadGameResources(); 
+				multiScene = new MultiScene();
+				multiScene.registerUpdateHandler(new IUpdateHandler() {
+			        @Override
+			        public void reset() { }
+
+			        @Override
+			        public void onUpdate(final float pSecondsElapsed) {
+			        	
+			        	if (multiScene.isLevelComplete()) {
+							multiScene.deactivateControl();
+						}
+			        	else {
+						
+			        	multiScene.delete_entity();
+			        }}
+			    });
+				setScene(multiScene); 
+				
+			}
+			
+		}));
+		
+	}
 
 	
 	public void loadLoginScene(final Engine mEngine) {

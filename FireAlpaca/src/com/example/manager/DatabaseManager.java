@@ -15,23 +15,24 @@ public class DatabaseManager {
 	private static final DatabaseManager INSTANCE = new DatabaseManager(); 
 	
 	public boolean openConnection(){
+		boolean result = false;
 		try {
 			Class.forName("org.postgresql.Driver");
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			System.err.println( "Driver not found: " + e + "\n" + e.getMessage() );
 		}
-		String url;
-		url = "jdbc:postgresql://db:5432/g1227119_u"+
-				"?sslfactory=org.postgresql.ssl.NonValidatingFactory"+
-				"&ssl=true";
 		try {
-			Connection con = DriverManager.getConnection(url, "g1227119_u", "0pv1T8NHRp");
-			c = con;
-			return true;
+			c = DriverManager.getConnection("jdbc:postgresql://db.doc.ic.ac.uk/g1227119_u"+
+					"?sslfactory=org.postgresql.ssl.NonValidatingFactory"+
+					"&ssl=true", "g1227119_u", "0pv1T8NHRp");
+			if(c==null){
+				System.err.println("Connection not found.");
+			}
+			result = true;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.err.println("Exception: " + e + "\n" + e.getMessage() );
 		}
-		return false;
+		return result;
 	}
 	
 	public void afterLevel(int currentLevel, int score, int coins) throws SQLException{
@@ -116,6 +117,13 @@ public class DatabaseManager {
 		return result;
 	}
 	
+	public void closeConnection(){
+		try {
+			c.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 public static DatabaseManager getInstance() { 
 		
 		return INSTANCE; 
