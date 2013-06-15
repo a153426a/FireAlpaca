@@ -62,6 +62,7 @@ public class ResourcesManager {
 	public ITextureRegion bullet_region;
 	
 	//player region 
+	public ITiledTextureRegion player2_region;
 	public ITiledTextureRegion player_region;
 	public ITiledTextureRegion complete_stars_region;
 	
@@ -194,6 +195,7 @@ public class ResourcesManager {
 		breakable_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "breakable.png");
 		coin_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "coin.png");
 		player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "player.png", 3, 1); 
+		player2_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "player.png", 3, 1); 
 		base_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "base.png");
 		flag_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "flag.png");
 		bullet_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "bullet.png");

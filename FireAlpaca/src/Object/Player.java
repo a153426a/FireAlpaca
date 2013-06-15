@@ -1,21 +1,16 @@
 package Object;
 
 import org.andengine.engine.camera.Camera;
-import org.andengine.entity.modifier.MoveModifier;
-import org.andengine.entity.modifier.MoveXModifier;
-import org.andengine.entity.modifier.MoveYModifier;
 import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
+import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
-
-import scene.GameScene;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.example.manager.ResourcesManager;
-import com.example.manager.SceneManager;
 
 
 public abstract class Player extends AnimatedSprite {
@@ -24,10 +19,17 @@ public abstract class Player extends AnimatedSprite {
 	public abstract void onDie();
 	private float health;
 	public float total_health;
+	private String userdata;
 	
-	public Player(float pX, float pY, VertexBufferObjectManager vbo, Camera camera, PhysicsWorld physicsWorld) {
+	public Player(float pX, float pY, VertexBufferObjectManager vbo, Camera camera, PhysicsWorld physicsWorld, ITiledTextureRegion region) {
 		
-		super(pX, pY, ResourcesManager.getInstance().player_region, vbo);
+		super(pX, pY, region, vbo);
+		if (region == ResourcesManager.getInstance().player_region) {
+			userdata = "player";
+		}
+		else {
+			userdata = "player2";
+		}
 		createPhysics(camera, physicsWorld);
 		final long[] PLAYER_ANIMATE = new long[] { 10, 1, 10 };    
 	    animate(PLAYER_ANIMATE, 0, 2, true);
@@ -39,7 +41,7 @@ public abstract class Player extends AnimatedSprite {
 		
 		body = PhysicsFactory.createBoxBody(physicsWorld, this, BodyType.DynamicBody, PhysicsFactory.createFixtureDef(0, 0, 0));
 
-	    body.setUserData("player");
+	    body.setUserData(userdata);
 	    body.setFixedRotation(true);
 	    
 	    physicsWorld.registerPhysicsConnector(new PhysicsConnector(this, body, true, false) {

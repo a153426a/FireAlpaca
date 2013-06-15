@@ -418,7 +418,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 						else if (type
 								.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLAYER)) {
 							player = new Player(x, y, vbom, camera,
-									physicsWorld) {
+									physicsWorld, ResourcesManager.getInstance().player_region) {
 								// TODO
 								@Override
 								public void onDie() {

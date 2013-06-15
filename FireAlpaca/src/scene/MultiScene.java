@@ -87,8 +87,9 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BREAKABLE = "breakable";
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLAYER = "player";
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_LEVEL_COMPLETE = "levelComplete";
-	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLAYER_2 = "player_2";
+	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLAYER2 = "player2";
 	public Player player;
+	public Player player2;
 
 	// many many many hashMaps
 	private HashMap player_bullets;
@@ -227,11 +228,11 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 					public void onControlChange(
 							final BaseOnScreenControl pBaseOnScreenControl,
 							final float pValueX, final float pValueY) {
-						player.getBody().setLinearVelocity(pValueX * 3,
-								pValueY * 3);
 						
 						//multi
 						if (mServer != null) {
+							player.getBody().setLinearVelocity(pValueX * 3,
+									pValueY * 3);
 							AddPointServerMessage message = (AddPointServerMessage) MultiScene.this.mMessagePool.obtainMessage(ServerMessages.SERVER_MESSAGE_ADD_POINT);
 							message.set(SERVER_ID,pValueX, pValueY);
 							mServer.sendMessage(message);
@@ -239,6 +240,8 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 						}
 						
 						else if (mClient != null) {
+							player2.getBody().setLinearVelocity(pValueX * 3,
+									pValueY * 3);
 							AddPointClientMessage message = (AddPointClientMessage) MultiScene.this.mMessagePool.obtainMessage(ClientMessages.CLIENT_MESSAGE_ADD_POINT);
 							message.set(CLIENT_ID, pValueX, pValueY);
 							mClient.sendMessage(message);
@@ -425,12 +428,12 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 						else if (type
 								.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLAYER)) {
 							player = new Player(x, y, vbom, camera,
-									physicsWorld) {
+									physicsWorld, ResourcesManager.getInstance().player_region) {
 								// TODO
 								@Override
 								public void onDie() {
 									if (!gameOverDisplayed) {
-
+										//TODO display who wins
 										displayGameOverText();
 									}
 								}
@@ -440,9 +443,9 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 						} 
 						
 						else if (type
-								.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLAYER_2)) {
-							player = new Player(x, y, vbom, camera,
-									physicsWorld) {
+								.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLAYER2)) {
+							player2 = new Player(x, y, vbom, camera,
+									physicsWorld, ResourcesManager.getInstance().player2_region) {
 								@Override
 								public void onDie() {
 									if (!gameOverDisplayed) {
@@ -452,7 +455,7 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 								}
 
 							};
-							levelObject = player;
+							levelObject = player2;
 						} 
 						
 

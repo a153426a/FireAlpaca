@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <level width="800" height="480">    
 	<entity x="410"  y="30" type ="player"/>
+	<entity x="480"  y="30" type = "player2"/>
 	<!-- Frame -->
 	<entity x="10" y="10" type="stone"/>
 	<entity x="30" y="10" type="stone"/>

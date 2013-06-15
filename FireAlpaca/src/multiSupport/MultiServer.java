@@ -3,7 +3,10 @@ package multiSupport;
 import java.io.IOException;
 
 
+import multiSupport.ClientMessages.AddPointClientMessage;
+
 import org.andengine.engine.Engine;
+import org.andengine.extension.multiplayer.protocol.adt.message.client.ClientMessage;
 import org.andengine.extension.multiplayer.protocol.adt.message.client.IClientMessage;
 import org.andengine.extension.multiplayer.protocol.adt.message.server.ServerMessage;
 import org.andengine.extension.multiplayer.protocol.server.IClientMessageHandler;
@@ -13,6 +16,10 @@ import org.andengine.extension.multiplayer.protocol.server.connector.ClientConne
 import org.andengine.extension.multiplayer.protocol.server.connector.SocketConnectionClientConnector;
 import org.andengine.extension.multiplayer.protocol.server.connector.SocketConnectionClientConnector.ISocketConnectionClientConnectorListener;
 import org.andengine.extension.multiplayer.protocol.shared.SocketConnection;
+
+import scene.MultiScene;
+
+import com.example.manager.SceneManager;
 
 import android.util.Log;
 
@@ -57,6 +64,16 @@ ISocketConnectionClientConnectorListener {
 
 						// Create a new client connector from the socket connection
 						final SocketConnectionClientConnector clientConnector = new SocketConnectionClientConnector(pSocketConnection);
+						clientConnector.registerClientMessage(ClientMessages.CLIENT_MESSAGE_ADD_POINT, AddPointClientMessage.class, new IClientMessageHandler<SocketConnection>(){ 
+							@Override 
+							public void onHandleMessage(ClientConnector<SocketConnection> pClientConnector, IClientMessage pClientMessage) throws IOException { 
+								
+								AddPointClientMessage message = (AddPointClientMessage) pClientMessage; 
+								((MultiScene)SceneManager.getInstance().getCurrentScene()).player2.getBody().setLinearVelocity(message.getX() * 3,
+										message.getY() * 3);;
+								
+							}
+						});
 						
 						// Return the new client connector
 						return clientConnector;
