@@ -68,6 +68,7 @@ import com.example.manager.ResourcesManager;
 import com.example.manager.SceneManager;
 import com.example.manager.SceneManager.SceneType;
 
+
 import extra.CoolDown;
 import extra.LevelCompleteWindow;
 
@@ -76,6 +77,7 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 	public PhysicsWorld physicsWorld;
 	public boolean isLevelComplete = false;
 	private Rectangle health_bar;
+	private Rectangle health_bar2;
 
 	// game graphic fields
 	private static final String TAG_ENTITY = "entity";
@@ -92,14 +94,17 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 	public Player player2;
 
 	// many many many hashMaps
-	private HashMap player_bullets;
+	public Map<Body, Bullet> player_bullets;
 	private HashMap breakables;
+	public Map<Body, Bullet> player2_bullets;
 
 
-	private Text gameOverText;
+	private Text gameOverText1;
+	private Text gameOverText2;
 	private LevelCompleteWindow levelCompleteWindow;
 	private boolean gameOverDisplayed = false;
 	public int bulletCounter; 
+	private boolean backKey = false;
 
 	// analog on screen control
 	private AnalogOnScreenControl analogLeftControl;
@@ -111,8 +116,8 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 	private MultiServer mServer;
 	private static final int SERVER_PORT = 4444;
 	private String mServerIP = LOCALHOST_IP;
-	private static final int SERVER_ID = 0;
-	private static final int CLIENT_ID = 1;
+	public static final int SERVER_ID = 0;
+	public static final int CLIENT_ID = 1;
 	private static final int DIALOG_CHOOSE_ENVIRONMENT_ID = 0;
 	private static final int DIALOG_ENTER_SERVER_IP = DIALOG_CHOOSE_ENVIRONMENT_ID + 1;
 	public MessagePool<IMessage> mMessagePool;
@@ -130,7 +135,8 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 			}
 		});
 		breakables = new HashMap();
-		player_bullets = new HashMap();
+		player_bullets = new HashMap<Body, Bullet>();
+		player2_bullets = new HashMap<Body, Bullet>();
 		engine.setTouchController(new MultiTouchController());
 		createBackground();
 		createLeftControl();
@@ -145,11 +151,12 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 	}
 
 	
+	
 	public void createDialog() {
 		AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
 		dialog.setTitle("Choose server or client");
 		dialog.setCancelable(false);
-		dialog.setPositiveButton("Client", new OnClickListener() {
+		dialog.setPositiveButton("Client (Yellow Alpaca)", new OnClickListener() {
 
 			@Override
 			public void onClick(DialogInterface arg0, int arg1) {
@@ -184,7 +191,7 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 			
 		});
 		
-		dialog.setNegativeButton("Server", new OnClickListener() {
+		dialog.setNegativeButton("Server (White Alpaca)", new OnClickListener() {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -212,9 +219,7 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 	}
 
 
-	
 
-	
 	
 	
 	
@@ -229,12 +234,13 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 							final BaseOnScreenControl pBaseOnScreenControl,
 							final float pValueX, final float pValueY) {
 						
+						
 						//multi
 						if (mServer != null) {
 							player.getBody().setLinearVelocity(pValueX * 3,
 									pValueY * 3);
 							AddPointServerMessage message = (AddPointServerMessage) MultiScene.this.mMessagePool.obtainMessage(ServerMessages.SERVER_MESSAGE_ADD_POINT);
-							message.set(SERVER_ID,pValueX, pValueY);
+							message.set(SERVER_ID, player.getX(), player.getY(), 0, 0, 0, backKey, player.getHealth());
 							mServer.sendMessage(message);
 							MultiScene.this.mMessagePool.recycleMessage(message);
 						}
@@ -243,10 +249,11 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 							player2.getBody().setLinearVelocity(pValueX * 3,
 									pValueY * 3);
 							AddPointClientMessage message = (AddPointClientMessage) MultiScene.this.mMessagePool.obtainMessage(ClientMessages.CLIENT_MESSAGE_ADD_POINT);
-							message.set(CLIENT_ID, pValueX, pValueY);
+							message.set(CLIENT_ID, player2.getX(), player2.getY(), 0, 0, 0, backKey, player2.getHealth());
 							mClient.sendMessage(message);
 							MultiScene.this.mMessagePool.recycleMessage(message);
 						}
+						
 					}
 
 					@Override
@@ -277,7 +284,40 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 							final float pValueX, final float pValueY) {
 						if ((pValueX != 0 || pValueY != 0)
 								&& CoolDown.getSharedInstance().checkValidity()) {
-							player_shoot(pValueX, pValueY);
+							
+							float px = pValueX * pValueX;
+							float py = pValueY * pValueY; 
+							float xVel, yVel; 
+							
+							if(pValueX >= 0) { 
+								xVel = px / (px + py);
+							} else { 
+								xVel = -px / (px + py);
+							}
+							
+							if(pValueY >= 0) { 
+								yVel = py / (px + py);
+							} else { 
+								yVel = -py / (px + py);
+							}
+							
+							//multi
+							if (mServer != null) {
+								player_shoot(xVel, yVel);
+								AddPointServerMessage message = (AddPointServerMessage) MultiScene.this.mMessagePool.obtainMessage(ServerMessages.SERVER_MESSAGE_ADD_POINT);
+								message.set(SERVER_ID, 0, 0, 1, xVel, yVel, backKey, player.getHealth());
+								mServer.sendMessage(message);
+								MultiScene.this.mMessagePool.recycleMessage(message);
+							}
+							
+							else if (mClient != null) {
+								player2_shoot(xVel, yVel);
+								AddPointClientMessage message = (AddPointClientMessage) MultiScene.this.mMessagePool.obtainMessage(ClientMessages.CLIENT_MESSAGE_ADD_POINT);
+								message.set(CLIENT_ID, 0, 0, 1, xVel, yVel, backKey, player.getHealth());
+								mClient.sendMessage(message);
+								MultiScene.this.mMessagePool.recycleMessage(message);
+							}
+							
 						}
 
 					}
@@ -299,6 +339,11 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 
 	@Override
 	public void onBackKeyPressed() {
+		backKey = true;
+		if (this.mClient !=null) 
+			this.mClient.terminate();
+		if (this.mServer != null) 
+			this.mServer.terminate();
 		SceneManager.getInstance().setLevel(1);
 		SceneManager.getInstance().loadMenuScene(engine);
 
@@ -336,14 +381,23 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 		gameHUD = new HUD();
 		camera.setHUD(gameHUD);
 		
-		Text healthText = new Text(510, 460, resourcesManager.font, "Health:", vbom);
+		Text healthText = new Text(510, 460, resourcesManager.font, "Health1:", vbom);
 		healthText.setScale(0.7f);
+		Text healthText2 = new Text(100, 460, resourcesManager.font, "Health2:", vbom);
+		healthText2.setScale(0.7f);
 		health_bar = new Rectangle(580, 470, (player.getHealth()-1)/player.total_health*200, 10, vbom);
 		health_bar.setAnchorCenterX(0);
-		health_bar.setColor(Color.GREEN);
+		health_bar.setColor(Color.RED);
+		
+		health_bar2 = new Rectangle(180, 470, (player2.getHealth()-1)/player2.total_health*200, 10, vbom);
+		health_bar2.setAnchorCenterX(0);
+		health_bar2.setColor(Color.GREEN);
+		
 		
 		attachChild(healthText);
 		attachChild(health_bar);
+		attachChild(healthText2);
+		attachChild(health_bar2);
 
 	}
 
@@ -432,9 +486,8 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 								// TODO
 								@Override
 								public void onDie() {
-									if (!gameOverDisplayed) {
-										//TODO display who wins
-										displayGameOverText();
+									if(!gameOverDisplayed) { 
+										displayGameOverText("Yellow"); 
 									}
 								}
 
@@ -448,9 +501,8 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 									physicsWorld, ResourcesManager.getInstance().player2_region) {
 								@Override
 								public void onDie() {
-									if (!gameOverDisplayed) {
-
-										displayGameOverText();
+									if(!gameOverDisplayed) { 
+										displayGameOverText("White"); 
 									}
 								}
 
@@ -468,7 +520,13 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 								protected void onManagedUpdate(
 										float pSecondsElapsed) {
 									super.onManagedUpdate(pSecondsElapsed);
-									health_bar.setWidth((player.getHealth()-1)/player.total_health*200);
+									
+									if(player.getHealth() <= 0) { 
+										displayGameOverText("Yellow"); 
+									} if(player2.getHealth() <= 0) { 
+										displayGameOverText("White");
+									}
+									
 									
 								}
 
@@ -512,16 +570,22 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 
 	private void createGameOverText() {
 
-		gameOverText = new Text(0, 0, resourcesManager.font, "Game Over!", vbom);
-
+		gameOverText1 = new Text(0, 0, resourcesManager.font, "The White Alpaca Wins!", vbom);
+		gameOverText2 = new Text(0, 0, resourcesManager.font, "The Yellow Alpaca Wins!", vbom);
 	}
 
-	private void displayGameOverText() {
-
-		gameOverText.setPosition(camera.getCenterX(), camera.getCenterY());
-		attachChild(gameOverText);
+	private void displayGameOverText(String s) {
+		
+		if (s.equals("White")) {
+			gameOverText1.setPosition(camera.getCenterX(), camera.getCenterY());
+			attachChild(gameOverText1);
+		}
+		else if (s.equals("Yellow")) {
+			gameOverText2.setPosition(camera.getCenterX(), camera.getCenterY());
+			attachChild(gameOverText2);
+		}
 		gameOverDisplayed = true;
-
+		
 	}
 
 	private ContactListener contactListener() {
@@ -547,7 +611,7 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 
 				}
 
-				// bullet & bullet
+				// player bullet & player bullet
 				else if (x1.getBody().getUserData().equals("player_bullet")
 						&& x2.getBody().getUserData().equals("player_bullet")) {
 
@@ -555,7 +619,7 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 					x2.getBody().setUserData("player_bullet_deleted");
 				}
 
-				// bullet & breakable
+				// player bullet & player  breakable
 				else if (x1.getBody().getUserData().equals("breakable")
 						&& x2.getBody().getUserData().equals("player_bullet")) {
 					x1.getBody().setUserData("breakable_deleted");
@@ -568,6 +632,117 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 					x2.getBody().setUserData("breakable_deleted");
 					x1.getBody().setUserData("player_bullet_deleted");
 				}
+				
+				// p1 bullet & p2 bullet
+				else if (x1.getBody().getUserData().equals("player_bullet")
+						&& x2.getBody().getUserData().equals("player2_bullet")) {
+
+					x1.getBody().setUserData("player_bullet_deleted");
+					x2.getBody().setUserData("player2_bullet_deleted");
+				}
+				else if (x2.getBody().getUserData().equals("player_bullet")
+						&& x1.getBody().getUserData().equals("player2_bullet")) {
+
+					x2.getBody().setUserData("player_bullet_deleted");
+					x1.getBody().setUserData("player2_bullet_deleted");
+				}
+				
+				// p2 bullet & unbreakable stone
+				if (x1.getBody().getUserData().equals("stone")
+						&& x2.getBody().getUserData().equals("player2_bullet")) {
+					x2.getBody().setUserData("player2_bullet_deleted");
+
+				}
+				
+				else if (x2.getBody().getUserData().equals("stone")
+						&& x1.getBody().getUserData().equals("player2_bullet")) {
+
+					x1.getBody().setUserData("player2_bullet_deleted");
+				}
+				
+				// p2 bullet & breakable stone
+				else if (x1.getBody().getUserData().equals("breakable")
+						&& x2.getBody().getUserData().equals("player2_bullet")) {
+					x1.getBody().setUserData("breakable_deleted");
+					x2.getBody().setUserData("player2_bullet_deleted");
+				}
+				
+				
+				else if (x2.getBody().getUserData().equals("breakable")
+						&& x1.getBody().getUserData().equals("player2_bullet")) {
+					x2.getBody().setUserData("breakable_deleted");
+					x1.getBody().setUserData("player2_bullet_deleted");
+				}
+				
+				// p2 bullet & p2 bullet
+				else if (x1.getBody().getUserData().equals("player2_bullet")
+						&& x2.getBody().getUserData().equals("player2_bullet")) {
+
+					x1.getBody().setUserData("player2_bullet_deleted");
+					x2.getBody().setUserData("player2_bullet_deleted");
+				}
+				
+				
+				
+				
+					
+					// p1 bullet & p2
+				 if (x1.getBody().getUserData().equals("player2")
+							&& x2.getBody().getUserData().equals("player_bullet")) {
+						float health = player2.getHealth();
+						if (health > 1) {
+							
+							player2.setHealth(health - 1);
+							health_bar2.setWidth((player2.getHealth()-1)/player.total_health*200);
+						} else {
+							x1.getBody().setUserData("player2_dead");
+						}
+						x2.getBody().setUserData("player_bullet_deleted");
+
+					}
+					
+					else if (x2.getBody().getUserData().equals("player2")
+							&& x1.getBody().getUserData().equals("player_bullet")) {
+						float health = player2.getHealth();
+						if (health > 1) {
+							player2.setHealth(health - 1);
+							health_bar2.setWidth((player2.getHealth()-1)/player.total_health*200);
+						} else {
+							x2.getBody().setUserData("player2_dead");
+						}
+						x1.getBody().setUserData("player_bullet_deleted");
+
+					}
+					
+					// p2 bullet & p1
+					else if (x1.getBody().getUserData().equals("player")
+							&& x2.getBody().getUserData().equals("player2_bullet")) {
+						float health = player.getHealth();
+						if (health > 1) {
+							player.setHealth(health - 1);
+							health_bar.setWidth((player.getHealth()-1)/player.total_health*200);
+						} else {
+							x1.getBody().setUserData("player_dead");
+						}
+						x2.getBody().setUserData("player2_bullet_deleted");
+
+					}
+					
+					else if (x2.getBody().getUserData().equals("player")
+							&& x1.getBody().getUserData().equals("player2_bullet")) {
+						float health = player.getHealth();
+						if (health > 1) {
+							player.setHealth(health - 1);
+							health_bar.setWidth((player.getHealth()-1)/player.total_health*200);
+						} else {
+							x2.getBody().setUserData("player_dead");
+						}
+						x1.getBody().setUserData("player2_bullet_deleted");
+
+					}
+					
+				
+				
 
 			}
 
@@ -596,42 +771,21 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 
 	public void player_shoot(float x, float y) {
 
-		float xVel = 0, yVel = 0;
-		int a = 0, b = 0;
-		float px = x * x;
-		float py = y * y;
-		if (x >= 0 && y >= 0) {
-			xVel = px / (px + py);
-			yVel = py / (px + py);
-			a = 1;
-			b = 1;
-		} else if (x >= 0 && y <= 0) {
-			xVel = px / (px + py);
-			yVel = -py / (px + py);
-			a = 1;
-			b = -1;
-		} else if (x <= 0 && y <= 0) {
-			xVel = -px / (px + py);
-			yVel = -py / (px + py);
-			a = -1;
-			b = -1;
-		} else if (x <= 0 && y >= 0) {
-			xVel = -px / (px + py);
-			yVel = py / (px + py);
-			a = -1;
-			b = 1;
-		}
-		if (x == 0) {
-			a = 0;
-		}
-		if (y == 0) {
-			b = 0;
-		}
-		Bullet bullet = new Bullet(player.getX() + 10 * xVel, player.getY() + 10
-				* yVel, vbom, camera, physicsWorld, "player_bullet");
+		Bullet bullet = new Bullet(player.getX() + 10 * x, player.getY() + 10
+				* y, vbom, camera, physicsWorld, "player_bullet", ResourcesManager.getInstance().bullet_region);
 		attachChild(bullet);
 		player_bullets.put(bullet.bullet_get_body(), bullet);
-		bullet.bullet_get_body().setLinearVelocity(xVel * 20, yVel * 20);
+		bullet.bullet_get_body().setLinearVelocity(x * 20, y * 20);
+	}
+	
+	public void player2_shoot(float x, float y) {
+
+		
+		Bullet bullet = new Bullet(player2.getX() + 10 * x, player2.getY() + 10
+				* y, vbom, camera, physicsWorld, "player2_bullet", ResourcesManager.getInstance().bullet2_region);
+		attachChild(bullet);
+		player2_bullets.put(bullet.bullet_get_body(), bullet);
+		bullet.bullet_get_body().setLinearVelocity(x * 20, y * 20);
 	}
 	
 	
@@ -648,7 +802,8 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 				physicsWorld.destroyBody(currentBody);
 				detachChild(player);
 				
-			} else if (currentBody.getUserData()
+			}
+			else if (currentBody.getUserData()
 					.equals("player_bullet_deleted")) {
 				Bullet b = (Bullet) player_bullets.get(currentBody);
 				player_bullets.remove(currentBody);
@@ -668,6 +823,26 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 				physicsWorld.destroyBody(currentBody);
 				detachChild(b);
 			}
+			else if (currentBody.getUserData().equals("player2_dead")) {
+				player2.onDie();
+				physicsWorld.unregisterPhysicsConnector(physicsWorld
+						.getPhysicsConnectorManager()
+						.findPhysicsConnectorByShape(player2));
+				physicsWorld.destroyBody(currentBody);
+				detachChild(player2);
+			} 
+			
+			else if (currentBody.getUserData()
+					.equals("player2_bullet_deleted")) {
+				Bullet b = (Bullet) player2_bullets.get(currentBody);
+				player2_bullets.remove(currentBody);
+				physicsWorld.unregisterPhysicsConnector(physicsWorld
+						.getPhysicsConnectorManager()
+						.findPhysicsConnectorByShape(b));
+				physicsWorld.destroyBody(currentBody);
+				detachChild(b);
+			}
+
 		}
 	}
 	
@@ -680,6 +855,18 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 		analogLeftControl.setIgnoreUpdate(true);
 		analogRightControl.setVisible(false);
 		analogLeftControl.setIgnoreUpdate(true);
+		analogLeftControl.setIgnoreUpdate(true);
+
+		for (Bullet bullet: player2_bullets.values()) {
+			detachChild(bullet);
+		}
+		for (Bullet bullet: player_bullets.values()) {
+			detachChild(bullet);
+		}
+	}
+	
+	public boolean isGameOver() {
+		return gameOverDisplayed;
 	}
 	
 }

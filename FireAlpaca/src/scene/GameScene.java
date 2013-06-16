@@ -94,9 +94,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
 	// many many many hashMaps
 	private Map<Body, Enemy> enemies;
-	private HashMap player_bullets;
+	private Map<Body, Bullet> player_bullets;
 	private HashMap breakables;
-	private HashMap enemy_bullets;
+	private Map<Body, Bullet> enemy_bullets;
 
 
 	private Text gameOverText;
@@ -114,8 +114,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 		enemies = new HashMap<Body, Enemy>();
 
 		breakables = new HashMap();
-		player_bullets = new HashMap();
-		enemy_bullets = new HashMap();
+		player_bullets = new HashMap<Body, Bullet>();
+		enemy_bullets = new HashMap<Body, Bullet>();
 		engine.setTouchController(new MultiTouchController());
 		createBackground();
 		createLeftControl();
@@ -919,6 +919,14 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 					x1.getBody().setUserData("enemy_bullet_deleted");
 				}
 				
+				//enemy bullet with enemy bullet
+				else if (x1.getBody().getUserData().equals("enemy_bullet")
+						&& x2.getBody().getUserData().equals("enemy_bullet")) {
+					x2.getBody().setUserData("enemy_bullet_deleted");
+					x1.getBody().setUserData("enemy_bullet_deleted");
+				}
+				
+				
 				
 				// enemy bullet with enemy
 				else if ((x2.getBody().getUserData().equals("blueEnemy")
@@ -1083,7 +1091,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 			b = 0;
 		}
 		Bullet bullet = new Bullet(player.getX() + 10 * xVel, player.getY() + 10
-				* yVel, vbom, camera, physicsWorld, "player_bullet");
+				* yVel, vbom, camera, physicsWorld, "player_bullet", ResourcesManager.getInstance().bullet_region);
 		attachChild(bullet);
 		player_bullets.put(bullet.bullet_get_body(), bullet);
 		bullet.bullet_get_body().setLinearVelocity(xVel * 20, yVel * 20);
@@ -1120,7 +1128,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 				yV = -yD*yD/(xD*xD + yD*yD); 
 			}
 			
-			Bullet bullet = new Bullet(enemy.getX() + 10*xV, enemy.getY() + 10*yV, vbom, camera, physicsWorld, "enemy_bullet");
+			Bullet bullet = new Bullet(enemy.getX() + 10*xV, enemy.getY() + 10*yV, vbom, camera, physicsWorld, "enemy_bullet", 
+					ResourcesManager.getInstance().bullet2_region);
 			attachChild(bullet);
 			enemy_bullets.put(bullet.bullet_get_body(), bullet);
 			bullet.bullet_get_body().setLinearVelocity(xV * 20, yV * 20);
@@ -1197,10 +1206,23 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 		analogLeftControl.setIgnoreUpdate(true);
 		analogRightControl.setVisible(false);
 		analogLeftControl.setIgnoreUpdate(true);
+		for(Enemy enemy : enemies.values()) {
+			detachChild(enemy);
+		}
+		for (Bullet bullet: enemy_bullets.values()) {
+			detachChild(bullet);
+		}
+		for (Bullet bullet: player_bullets.values()) {
+			detachChild(bullet);
+		}
 	}
 	
 	public boolean isFirstTouch() {
 		return firstTouch;
+	}
+	
+	public boolean isGameOver() {
+		return gameOverDisplayed;
 	}
 
 }

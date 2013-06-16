@@ -43,7 +43,10 @@ public class ResourcesManager {
 	public ITextureRegion single_region;
 	public ITextureRegion multi_region;
 	public ITextureRegion music_region;
-	private BuildableBitmapTextureAtlas menuTextureAtlas;
+	public BuildableBitmapTextureAtlas menuTextureAtlas;
+	public ITextureRegion shop_region;
+	public ITextureRegion help_region;
+	public ITextureRegion leaderboard_region;
 	
 	//loading scene font
 	public Font font;
@@ -60,6 +63,7 @@ public class ResourcesManager {
 	public ITextureRegion base_region; 
 	public ITextureRegion flag_region;
 	public ITextureRegion bullet_region;
+	public ITextureRegion bullet2_region;
 	
 	//player region 
 	public ITiledTextureRegion player2_region;
@@ -97,6 +101,15 @@ public class ResourcesManager {
 	public BitmapTextureAtlas analogControlTextureAtlas;
 	public ITextureRegion analog_base_region;
 	public ITextureRegion analog_knob_region;
+	
+	
+	//shop region
+	public BuildableBitmapTextureAtlas shopTextureAtlas;
+	public ITextureRegion caonima_region;
+	public ITextureRegion attack_region;
+	public ITextureRegion health_region;
+	public ITextureRegion xiaojinbi_region;
+	public ITextureRegion buy_region;
 	
 	
 	public void loadMenuResources() { 
@@ -165,7 +178,11 @@ public class ResourcesManager {
 	public void unloadSelectorAtlas() {
 		this.selectorTextureAtlas.unload();
 	}
-
+	
+	
+	public void unloadShopAtlas() {
+		this.shopTextureAtlas.unload();
+	}
 	private void loadLoginGraphics() {
 		
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/login/");
@@ -185,6 +202,25 @@ public class ResourcesManager {
 
 		
 	}
+	
+	
+	public void loadShopGraphics() {
+		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/shop/");
+		shopTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1024, 1024, TextureOptions.BILINEAR);
+		attack_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(shopTextureAtlas, activity, "attackup.png");
+		health_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(shopTextureAtlas, activity, "healthup.png");
+		buy_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(shopTextureAtlas, activity, "buy.png");
+		xiaojinbi_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(shopTextureAtlas, activity, "xiaojinbi.png");
+		caonima_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(shopTextureAtlas, activity, "caonima.png");
+		try {
+			this.shopTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
+			this.shopTextureAtlas.load();
+		}
+		catch (final TextureAtlasBuilderException e) {
+			Debug.e(e);
+		}
+
+	}
 
 	private void loadGameGraphics() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
@@ -199,6 +235,7 @@ public class ResourcesManager {
 		base_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "base.png");
 		flag_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "flag.png");
 		bullet_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "bullet.png");
+		bullet2_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "bullet.png");
 		
 		red_enemy_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "red_enemy.png", 3, 1); 
 		blue_enemy_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "blue_enemy.png", 3, 1);
@@ -242,7 +279,9 @@ public class ResourcesManager {
 		single_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "single.png");
 		multi_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "multi.png");
 		music_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "music.png");
-		
+		shop_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "multi.png");
+		help_region =  BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "music.png");
+		leaderboard_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "multi.png");
 		try {
 			this.menuTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
 			this.menuTextureAtlas.load();

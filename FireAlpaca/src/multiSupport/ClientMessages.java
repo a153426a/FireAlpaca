@@ -20,6 +20,11 @@ public class ClientMessages {
 		private int mID;
 		private float mX;
 		private float mY;
+		private int shoot; 
+		private float bX; 
+		private float bY; 
+		private boolean backKey;
+		private float health;
 
 		// Empty constructor needed for message pool allocation
 		public AddPointClientMessage() {
@@ -28,17 +33,28 @@ public class ClientMessages {
 
 		// Constructor
 		public AddPointClientMessage(final int pID, final float pX,
-				final float pY) {
+				final float pY, final int shoot, final float bX, final float bY, final boolean backKey, final float health) {
 			this.mID = pID;
 			this.mX = pX;
 			this.mY = pY;
+			this.shoot = shoot; 
+			this.bX = bX; 
+			this.bY = bY;
+			this.backKey = backKey;
+			this.health = health; 
 		}
 
 		// A Setter is needed to change values when we obtain a message from the
 		// message pool
-		public void set(final int pID, final float pX, final float pY) {
+		public void set(final int pID, final float pX, final float pY, final int shoot, final float bX, final float bY, final boolean backKey, final float health) {
 			this.mID = pID;
 			this.mX = pX;
+			this.mY = pY;
+			this.shoot = shoot; 
+			this.bX = bX; 
+			this.bY = bY;
+			this.backKey = backKey;
+			this.health = health; 
 		}
 
 		// Getters
@@ -53,7 +69,26 @@ public class ClientMessages {
 		public float getY() {
 			return this.mY;
 		}
+		
+		public int getShoot() { 
+			return this.shoot; 
+		}
+		
+		public float getBX() { 
+			return this.bX; 
+		}
 
+		public float getBY() {
+			return this.bY;
+		}
+		
+		public boolean getBackKey() {
+			return this.backKey;
+		}
+		
+		public float getHealth() { 
+			return this.health;
+		}
 		// Get the message flag
 		@Override
 		public short getFlag() {
@@ -67,6 +102,11 @@ public class ClientMessages {
 			this.mID = pDataInputStream.readInt();
 			this.mX = pDataInputStream.readFloat();
 			this.mY = pDataInputStream.readFloat();
+			this.shoot = pDataInputStream.readInt();; 
+			this.bX = pDataInputStream.readFloat(); 
+			this.bY = pDataInputStream.readFloat();
+			this.backKey = pDataInputStream.readBoolean();
+			this.health = pDataInputStream.readFloat();; 
 		}
 
 		// Write the message's member variables to the output stream
@@ -76,6 +116,11 @@ public class ClientMessages {
 			pDataOutputStream.writeInt(this.mID);
 			pDataOutputStream.writeFloat(this.mX);
 			pDataOutputStream.writeFloat(this.mY);
+			pDataOutputStream.writeInt(this.shoot); 
+			pDataOutputStream.writeFloat(this.bX); 
+			pDataOutputStream.writeFloat(this.bY);
+			pDataOutputStream.writeBoolean(this.backKey);
+			pDataOutputStream.writeFloat(this.health);
 		}
 	}
 }

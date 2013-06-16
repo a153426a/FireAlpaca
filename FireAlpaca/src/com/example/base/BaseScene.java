@@ -21,8 +21,8 @@ public abstract class BaseScene extends Scene {
 	protected Engine engine; 
 	protected Activity activity; 
 	protected ResourcesManager resourcesManager; 
-	protected VertexBufferObjectManager vbom; 
-	protected BoundCamera camera; 
+	public VertexBufferObjectManager vbom; 
+	public BoundCamera camera; 
 	protected SceneManager sceneManager;
 	protected int level; 
 	protected int maxLevel;

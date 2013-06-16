@@ -15,6 +15,7 @@ import scene.MainMenuScene;
 import scene.MultiScene;
 import scene.RegisterScene;
 import scene.SelectorScene;
+import scene.ShopScene;
 import scene.SplashScene;
 
 import Object.Bullet;
@@ -33,6 +34,7 @@ public class SceneManager {
 	private BaseScene selectorScene;
 	private BaseScene registerScene;
 	private MultiScene multiScene;
+	private BaseScene shopScene;
 	private int level = 1; 
 	private int maxLevel = 8;
 	private int totalScore = 0; 
@@ -55,6 +57,7 @@ public class SceneManager {
 		SCENE_LOGIN, 
 		SCENE_SELECTOR,
 		SCENE_REGISTER, SCENE_MULTI,
+		SCENE_SHOP
 	}
 	
 	public void setScene(BaseScene scene) { 
@@ -96,6 +99,8 @@ public class SceneManager {
 		
 		case SCENE_MULTI:
 			setScene(multiScene);
+		case SCENE_SHOP:
+			setScene(shopScene);
 		
 		}
 	}
@@ -165,6 +170,14 @@ public class SceneManager {
 		ResourcesManager.getInstance().unloadMenuTextures(); 
 	}
 	
+	
+	public void createShopScene() { 
+		ResourcesManager.getInstance().loadShopGraphics();
+		shopScene = new ShopScene(); 
+		SceneManager.getInstance().setScene(shopScene); 
+		ResourcesManager.getInstance().unloadMenuTextures(); 
+	}
+	
 	public void createMenuScene() {
 		ResourcesManager.getInstance().loadMenuResources();
 		menuScene = new MainMenuScene();
@@ -194,7 +207,7 @@ public class SceneManager {
 			        @Override
 			        public void onUpdate(final float pSecondsElapsed) {
 			        	
-			        	if (gameScene.isLevelComplete()) {
+			        	if (gameScene.isLevelComplete() || gameScene.isGameOver()) {
 							gameScene.deactivateControl();
 						}
 			        	else {
@@ -234,7 +247,7 @@ public void loadMultiScene(final Engine mEngine) {
 			        @Override
 			        public void onUpdate(final float pSecondsElapsed) {
 			        	
-			        	if (multiScene.isLevelComplete()) {
+			        	if (multiScene.isLevelComplete()||multiScene.isGameOver()) {
 							multiScene.deactivateControl();
 						}
 			        	else {
@@ -260,7 +273,10 @@ public void loadMultiScene(final Engine mEngine) {
 	public void loadMenuScene(final Engine mEngine) { 
 		
 		setScene(loadingScene); 
-		gameScene.disposeScene(); 
+		if (gameScene != null) 
+			gameScene.disposeScene();
+		else if (multiScene != null)
+			multiScene.disposeScene();
 		ResourcesManager.getInstance().unloadGameTextures(); 
 		mEngine.registerUpdateHandler(new TimerHandler(0.1f, new ITimerCallback() { 
 			
@@ -284,6 +300,13 @@ public void loadMultiScene(final Engine mEngine) {
 		
 	}
 	
+	public void loadMenuSceneFromShop(final Engine mEngine) { 
+		
+		ResourcesManager.getInstance().unloadShopAtlas();
+		ResourcesManager.getInstance().loadMenuTextures();
+		setScene(menuScene);
+		
+	}
 	
 	public int getLevel() {
 		return level;

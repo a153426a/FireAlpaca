@@ -4,6 +4,7 @@ import java.io.IOException;
 
 
 import multiSupport.ClientMessages.AddPointClientMessage;
+import multiSupport.ServerMessages.AddPointServerMessage;
 
 import org.andengine.engine.Engine;
 import org.andengine.extension.multiplayer.protocol.adt.message.client.ClientMessage;
@@ -16,11 +17,16 @@ import org.andengine.extension.multiplayer.protocol.server.connector.ClientConne
 import org.andengine.extension.multiplayer.protocol.server.connector.SocketConnectionClientConnector;
 import org.andengine.extension.multiplayer.protocol.server.connector.SocketConnectionClientConnector.ISocketConnectionClientConnectorListener;
 import org.andengine.extension.multiplayer.protocol.shared.SocketConnection;
+import org.andengine.extension.physics.box2d.util.constants.PhysicsConstants;
 
 import scene.MultiScene;
 
+import com.badlogic.gdx.math.Vector2;
+import com.example.manager.ResourcesManager;
 import com.example.manager.SceneManager;
 
+
+import Object.Bullet;
 import android.util.Log;
 
 public class MultiServer implements
@@ -69,8 +75,26 @@ ISocketConnectionClientConnectorListener {
 							public void onHandleMessage(ClientConnector<SocketConnection> pClientConnector, IClientMessage pClientMessage) throws IOException { 
 								
 								AddPointClientMessage message = (AddPointClientMessage) pClientMessage; 
-								((MultiScene)SceneManager.getInstance().getCurrentScene()).player2.getBody().setLinearVelocity(message.getX() * 3,
-										message.getY() * 3);;
+								MultiScene multi = (MultiScene)SceneManager.getInstance().getCurrentScene();
+								
+								
+									if(message.getShoot() == 0) { 
+										//the player2 move 
+										multi.player2.getBody().setTransform(new Vector2(message.getX()/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, 
+												message.getY()/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT), 0);
+									} else {
+									//the player2 shoot
+										multi.player2.setHealth(message.getHealth());
+										Bullet bullet = new Bullet(multi.player2.getX() + 10 * message.getBX(), multi.player2.getY() + 10
+												* message.getBY(), multi.vbom, multi.camera,multi.physicsWorld, "player2_bullet", ResourcesManager.getInstance().bullet2_region);
+										multi.player2_bullets.put(bullet.bullet_get_body(), bullet);
+										multi.attachChild(bullet);
+										bullet.bullet_get_body().setLinearVelocity(message.getBX() * 20, message.getBY() * 20);
+									}
+								//AddPointServerMessage outgoingMessage = new AddPointServerMessage(message.getID(), message.getX(), message.getY());
+								//sendMessage(outgoingMessage);
+								
+							
 								
 							}
 						});

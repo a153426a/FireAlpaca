@@ -5,6 +5,8 @@ import org.andengine.entity.sprite.Sprite;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
+import org.andengine.opengl.texture.region.ITextureRegion;
+import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import scene.GameScene;
@@ -19,8 +21,9 @@ public class Bullet extends Sprite {
 	private Body body;
 	private PhysicsWorld pw;
 
-	public Bullet(float pX, float pY, VertexBufferObjectManager vbom, Camera camera, PhysicsWorld physicsWorld, String userData) {
-		super(pX, pY, ResourcesManager.getInstance().bullet_region, vbom);
+	public Bullet(float pX, float pY, VertexBufferObjectManager vbom, Camera camera, PhysicsWorld physicsWorld, String userData, ITextureRegion region) {
+		super(pX, pY, region, vbom);
+		
 		createPhysics(camera, physicsWorld, userData);
 		this.setScale(0.8f);
 		this.pw = physicsWorld;

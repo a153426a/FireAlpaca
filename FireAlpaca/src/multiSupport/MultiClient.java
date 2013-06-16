@@ -17,11 +17,15 @@ import org.andengine.extension.multiplayer.protocol.client.connector.ServerConne
 import org.andengine.extension.multiplayer.protocol.client.connector.SocketConnectionServerConnector;
 import org.andengine.extension.multiplayer.protocol.client.connector.SocketConnectionServerConnector.ISocketConnectionServerConnectorListener;
 import org.andengine.extension.multiplayer.protocol.shared.SocketConnection;
+import org.andengine.extension.physics.box2d.util.constants.PhysicsConstants;
 
 import scene.MultiScene;
 
+import Object.Bullet;
 import android.util.Log;
 
+import com.badlogic.gdx.math.Vector2;
+import com.example.manager.ResourcesManager;
 import com.example.manager.SceneManager;
 
 public class MultiClient implements ISocketConnectionServerConnectorListener {
@@ -77,13 +81,24 @@ private static final String TAG = "CLIENT";
 								ServerConnector<SocketConnection> pServerConnector,
 								IServerMessage pServerMessage)
 								throws IOException {
-							
-							// obtain the class casted server message
 							AddPointServerMessage message = (AddPointServerMessage) pServerMessage;
+								// obtain the class casted server message
+							MultiScene multi = (MultiScene)SceneManager.getInstance().getCurrentScene();
 							
+							if(message.getShoot() == 0) { 
 							//the player move 
-							((MultiScene)SceneManager.getInstance().getCurrentScene()).player.getBody().setLinearVelocity(message.getX() * 3,
-									message.getY() * 3);;
+							multi.player.getBody().setTransform(new Vector2(message.getX()/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, 
+									message.getY()/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT), 0);
+							} else {
+								//the player shoot
+								multi.player.setHealth(message.getHealth());
+								Bullet bullet = new Bullet(multi.player.getX() + 10 * message.getBX(), multi.player.getY() + 10
+										* message.getBY(), multi.vbom, multi.camera,multi.physicsWorld, "player_bullet", ResourcesManager.getInstance().bullet_region);
+								multi.player_bullets.put(bullet.bullet_get_body(), bullet);
+								multi.attachChild(bullet);
+								bullet.bullet_get_body().setLinearVelocity(message.getBX() * 20, message.getBY() * 20);
+							}
+						
 						}
 						
 					});
