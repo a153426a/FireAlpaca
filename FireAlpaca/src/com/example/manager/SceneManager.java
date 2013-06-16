@@ -9,6 +9,7 @@ import org.andengine.engine.handler.timer.ITimerCallback;
 import org.andengine.engine.handler.timer.TimerHandler;
 
 import scene.GameScene;
+import scene.LeaderScene;
 import scene.LoadingScene;
 import scene.LoginScene;
 import scene.MainMenuScene;
@@ -35,6 +36,7 @@ public class SceneManager {
 	private BaseScene registerScene;
 	private MultiScene multiScene;
 	private BaseScene shopScene;
+	private BaseScene leaderScene; 
 	private int level = 1; 
 	private int maxLevel = 8;
 	private int totalScore = 0; 
@@ -56,8 +58,10 @@ public class SceneManager {
 		SCENE_PROFILE,
 		SCENE_LOGIN, 
 		SCENE_SELECTOR,
-		SCENE_REGISTER, SCENE_MULTI,
-		SCENE_SHOP
+		SCENE_REGISTER, 
+		SCENE_MULTI,
+		SCENE_SHOP, 
+		SCENE_LEADER
 	}
 	
 	public void setScene(BaseScene scene) { 
@@ -101,6 +105,8 @@ public class SceneManager {
 			setScene(multiScene);
 		case SCENE_SHOP:
 			setScene(shopScene);
+		case SCENE_LEADER: 
+			setScene(leaderScene);
 		
 		}
 	}
@@ -175,6 +181,12 @@ public class SceneManager {
 		ResourcesManager.getInstance().loadShopGraphics();
 		shopScene = new ShopScene(); 
 		SceneManager.getInstance().setScene(shopScene); 
+		ResourcesManager.getInstance().unloadMenuTextures(); 
+	}
+	
+	public void createLeaderScene() { 
+		leaderScene = new LeaderScene(); 
+		SceneManager.getInstance().setScene(leaderScene); 
 		ResourcesManager.getInstance().unloadMenuTextures(); 
 	}
 	
@@ -303,6 +315,12 @@ public void loadMultiScene(final Engine mEngine) {
 	public void loadMenuSceneFromShop(final Engine mEngine) { 
 		
 		ResourcesManager.getInstance().unloadShopAtlas();
+		ResourcesManager.getInstance().loadMenuTextures();
+		setScene(menuScene);
+		
+	}
+	public void loadMenuSceneFromLeader(final Engine mEngine) { 
+		
 		ResourcesManager.getInstance().loadMenuTextures();
 		setScene(menuScene);
 		

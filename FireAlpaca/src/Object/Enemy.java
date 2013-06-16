@@ -31,20 +31,20 @@ public abstract class Enemy extends AnimatedSprite{
 		if (region == ResourcesManager.getInstance().blue_enemy_region)
 		{
 			userData = "blueEnemy";
-			health = 1;
+			health = 4;
 		}
 		else if (region == ResourcesManager.getInstance().red_enemy_region)
 		{
 			userData = "redEnemy";
-			health = 5;
+			health = 24;
 		}
 		else if(region == ResourcesManager.getInstance().yellow_enemy_region)
 		{
 			userData = "yellowEnemy";
-			health = 3;
+			health = 15;
 		} else { 
 			userData = "boss"; 
-			health = 100;
+			health = 1000;
 		}
 		createPhysics(camera, physicsWorld, userData);
 		final long[] ENEMY_ANIMATE = new long[] { 500, 500, 500 };

@@ -64,6 +64,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	private HUD gameHUD;
 	public PhysicsWorld physicsWorld;
 	private Text scoreText;
+	private Text coinText;
 	private int score = 0;
 	private int coin = 0;
 	private boolean isLevelComplete = false;
@@ -143,10 +144,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 					vbom);
 		} else if (level == 4) {
 			intro = new Text(0, 0, resourcesManager.font,
-					"Survive for 20 seconds!  ", vbom);
+					"Survive as long as you can! ", vbom);
 		} else {
 			intro = new Text(0, 0, resourcesManager.font,
-					"Kill the Final Boss! ", vbom);
+					"Kill the Boss (and his fellows)! ", vbom);
 		}
 		
 		intro.setPosition(camera.getCenterX(), camera.getCenterY());
@@ -276,7 +277,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 		scoreText.setText("Score: 0");
 		scoreText.setScale(0.7f);
 		gameHUD.attachChild(scoreText);
-		camera.setHUD(gameHUD);
 		
 		Text healthText = new Text(510, 460, resourcesManager.font, "Health:", vbom);
 		healthText.setScale(0.7f);
@@ -284,6 +284,12 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 		health_bar.setAnchorCenterX(0);
 		health_bar.setColor(Color.GREEN);
 		
+		coinText = new Text(20, 400, resourcesManager.font, "Coin: 0123456789", vbom);
+		coinText.setAnchorCenter(0, 0);
+		coinText.setText("Coin: 0");
+		coinText.setScale(0.7f);
+		gameHUD.attachChild(coinText);
+		camera.setHUD(gameHUD);
 		attachChild(healthText);
 		attachChild(health_bar);
 
@@ -295,6 +301,15 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 		scoreText.setText("Score: " + score);
 
 	}
+	
+	private void addToCoin(int i) {
+
+		coin += i;
+		coinText.setText("Coin: " + coin);
+
+	}
+	
+	
 
 	private void createPhysics() {
 
@@ -402,8 +417,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 									super.onManagedUpdate(pSecondsElapsed);
 
 									if (player.collidesWith(this)) {
-
-										addToScore(100);
+										addToCoin(100);
+										addToScore(50);
 										this.setVisible(false);
 										this.setIgnoreUpdate(true);
 									}
@@ -441,15 +456,15 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 								protected void onManagedUpdate(
 										float pSecondsElapsed) {
 									super.onManagedUpdate(pSecondsElapsed);
-									health_bar.setWidth((player.getHealth()-1)/player.total_health*200);
+									health_bar.setWidth((player.getHealth()-3)/player.total_health*200);
 									
 									if ((level == 1 || level == 5)
 											&& enemies.isEmpty()) {
-										if (score > 100 && score < 200) {
+										if (score > 300 && score < 600) {
 											levelCompleteWindow.display(
 													StarsCount.TWO,
 													GameScene.this, camera);
-										} else if (score > 200) {
+										} else if (score >= 600) {
 											levelCompleteWindow.display(
 													StarsCount.THREE,
 													GameScene.this, camera);
@@ -472,19 +487,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 									} else if ((level == 2 || level == 6)
 											&& (baseDestoryed || enemies
 													.isEmpty())) {
-										if (score > 100 && score < 200) {
-											levelCompleteWindow.display(
-													StarsCount.TWO,
-													GameScene.this, camera);
-										} else if (score > 200) {
+										
 											levelCompleteWindow.display(
 													StarsCount.THREE,
 													GameScene.this, camera);
-										} else {
-											levelCompleteWindow.display(
-													StarsCount.ONE,
-													GameScene.this, camera);
-										}
 										SceneManager.getInstance()
 												.incTotalScore(score);
 										SceneManager.getInstance()
@@ -501,11 +507,11 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 													&& player.getX() < 795
 													&& player.getY() > 185 && player
 													.getY() < 235)) {
-										if (score > 100 && score < 200) {
+										if (score > 300 && score < 500) {
 											levelCompleteWindow.display(
 													StarsCount.TWO,
 													GameScene.this, camera);
-										} else if (score > 200) {
+										} else if (score >= 500) {
 											levelCompleteWindow.display(
 													StarsCount.THREE,
 													GameScene.this, camera);
@@ -530,11 +536,11 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 													&& player.getX() < 795
 													&& player.getY() > 5 && player
 													.getY() < 55)) {
-										if (score > 100 && score < 200) {
+										if (score > 1200 && score < 1700) {
 											levelCompleteWindow.display(
 													StarsCount.TWO,
 													GameScene.this, camera);
-										} else if (score > 200) {
+										} else if (score > 1700) {
 											levelCompleteWindow.display(
 													StarsCount.THREE,
 													GameScene.this, camera);
@@ -657,8 +663,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 								public void onDie() {
 									addToScore(1000);
 								}
-
+								
 							};
+							enemy.setScale(2f);
 							levelObject = enemy;
 							enemies.put(enemy.get_body(), enemy);
 						}
@@ -792,8 +799,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 					Enemy e = (Enemy) enemies.get(x1.getBody());
 					float health = e.get_health();
 					// TODO: shop feature: change 1 to player attack value later
-					if (health > 1) {
-						e.set_health(health - 1);
+					if (health > player.getAttack()) {
+						e.set_health(health - player.getAttack());
 					} else {
 						x1.getBody().setUserData("red_enemy_deleted");
 					}
@@ -805,9 +812,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 					x1.getBody().setUserData("player_bullet_deleted");
 					Enemy e = (Enemy) enemies.get(x2.getBody());
 					float health = e.get_health();
-					// TODO: shop feature: change 1 to player attack value later
-					if (health > 1) {
-						e.set_health(health - 1);
+					if (health > player.getAttack()) {
+						e.set_health(health - player.getAttack());
 					} else {
 						x2.getBody().setUserData("red_enemy_deleted");
 					}
@@ -816,15 +822,27 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 				// bullet & blueEnemy
 				else if (x1.getBody().getUserData().equals("blueEnemy")
 						&& x2.getBody().getUserData().equals("player_bullet")) {
-					x1.getBody().setUserData("blue_enemy_deleted");
 					x2.getBody().setUserData("player_bullet_deleted");
+					Enemy e = (Enemy) enemies.get(x1.getBody());
+					float health = e.get_health();
+					if (health > player.getAttack()) {
+						e.set_health(health - player.getAttack());
+					} else {
+						x1.getBody().setUserData("blue_enemy_deleted");
+					}
 				}
 
 				// bullet & blueEnemy
 				else if (x2.getBody().getUserData().equals("blueEnemy")
 						&& x1.getBody().getUserData().equals("player_bullet")) {
-					x2.getBody().setUserData("blue_enemy_deleted");
 					x1.getBody().setUserData("player_bullet_deleted");
+					Enemy e = (Enemy) enemies.get(x2.getBody());
+					float health = e.get_health();
+					if (health > player.getAttack()) {
+						e.set_health(health - player.getAttack());
+					} else {
+						x2.getBody().setUserData("blue_enemy_deleted");
+					}
 				}
 
 				// bullet & yellowEnemy
@@ -834,8 +852,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 					Enemy e = (Enemy) enemies.get(x1.getBody());
 					float health = e.get_health();
 					// TODO: shop feature: change 1 to player attack value later
-					if (health > 1) {
-						e.set_health(health - 1);
+					if (health > player.getAttack()) {
+						e.set_health(health - player.getAttack());
 					} else {
 						x1.getBody().setUserData("yellow_enemy_deleted");
 					}
@@ -847,8 +865,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 					Enemy e = (Enemy) enemies.get(x2.getBody());
 					float health = e.get_health();
 					// TODO: shop feature: change 1 to player attack value later
-					if (health > 1) {
-						e.set_health(health - 1);
+					if (health > player.getAttack()) {
+						e.set_health(health - player.getAttack());
 					} else {
 						x2.getBody().setUserData("yellow_enemy_deleted");
 					}
@@ -862,8 +880,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 					Enemy e = (Enemy) enemies.get(x1.getBody());
 					float health = e.get_health();
 					// TODO: shop feature: change 1 to player attack value later
-					if (health > 1) {
-						e.set_health(health - 1);
+					if (health > player.getAttack()) {
+						e.set_health(health - player.getAttack());
 					} else {
 						x1.getBody().setUserData("boss_deleted");
 					}
@@ -875,8 +893,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 					Enemy e = (Enemy) enemies.get(x2.getBody());
 					float health = e.get_health();
 					// TODO: shop feature: change 1 to player attack value later
-					if (health > 1) {
-						e.set_health(health - 1);
+					if (health > player.getAttack()) {
+						e.set_health(health - player.getAttack());
 					} else {
 						x2.getBody().setUserData("boss_deleted");
 					}
@@ -989,8 +1007,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 				else if (x1.getBody().getUserData().equals("player")
 						&& x2.getBody().getUserData().equals("enemy_bullet")) {
 					float health = player.getHealth();
-					if (health > 1) {
-						player.setHealth(health - 1);
+					if (health > 3) {
+						player.setHealth(health - 3);
 					} else {
 						x1.getBody().setUserData("player_dead");
 					}
@@ -1001,8 +1019,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 				else if (x2.getBody().getUserData().equals("player")
 						&& x1.getBody().getUserData().equals("enemy_bullet")) {
 					float health = player.getHealth();
-					if (health > 1) {
-						player.setHealth(health - 1);
+					if (health > 3) {
+						player.setHealth(health - 3);
 					} else {
 						x2.getBody().setUserData("player_dead");
 					}

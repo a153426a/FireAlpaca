@@ -62,12 +62,12 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		menuChildScene = new MenuScene(camera);
 		menuChildScene.setPosition(400, 240);
 		
-		final IMenuItem singleMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_SINGLE, resourcesManager.single_region, vbom), 1.2f, 1);
-		final IMenuItem multiMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_MULTI, resourcesManager.multi_region, vbom), 1.2f, 1);
-		final IMenuItem musicMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_MUSIC, resourcesManager.music_region, vbom), 0.8f, 1);
-		final IMenuItem helpMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_HELP, resourcesManager.help_region, vbom), 0.8f, 1);
-		final IMenuItem shopMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_SHOP, resourcesManager.shop_region, vbom), 1.2f, 1);
-		final IMenuItem leaderboardMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_LEADERBOARD, resourcesManager.leaderboard_region, vbom), 1.2f, 1);
+		final IMenuItem singleMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_SINGLE, resourcesManager.single_region, vbom), 1f, 0.8f);
+		final IMenuItem multiMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_MULTI, resourcesManager.multi_region, vbom), 1f, 0.8f);
+		final IMenuItem musicMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_MUSIC, resourcesManager.music_region, vbom), 1f, 0.8f);
+		final IMenuItem helpMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_HELP, resourcesManager.help_region, vbom), 1f, 0.8f);
+		final IMenuItem shopMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_SHOP, resourcesManager.shop_region, vbom), 1f, 0.8f);
+		final IMenuItem leaderboardMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_LEADERBOARD, resourcesManager.leaderboard_region, vbom), 1f, 0.8f);
 		
 		menuChildScene.addMenuItem(singleMenuItem);
 		menuChildScene.addMenuItem(multiMenuItem);
@@ -87,6 +87,10 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		leaderboardMenuItem.setPosition(-200, -180);
 		musicMenuItem.setScale(0.8f);
 		helpMenuItem.setScale(0.8f);
+		singleMenuItem.setScale(0.8f);
+		multiMenuItem.setScale(0.8f);
+		shopMenuItem.setScale(0.8f);
+		leaderboardMenuItem.setScale(0.8f);
 		menuChildScene.setOnMenuItemClickListener(this);
 		
 		setChildScene(menuChildScene);
@@ -116,6 +120,8 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		case MENU_SHOP:
 			SceneManager.getInstance().createShopScene();
 			return true;
+		case MENU_LEADERBOARD: 
+			SceneManager.getInstance().createLeaderScene();
 		default:
 			return false;
 		}

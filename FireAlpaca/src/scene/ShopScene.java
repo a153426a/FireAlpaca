@@ -28,35 +28,57 @@ public class ShopScene extends BaseScene implements IOnMenuItemClickListener {
 	private Sprite caonima;
 	private Sprite attack;
 	private Sprite health;
-	
-	@Override
-	public boolean onMenuItemClicked(MenuScene pMenuScene, IMenuItem pMenuItem,
-			float pMenuItemLocalX, float pMenuItemLocalY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	private Sprite caonima2;
+	private Text attack_text; 
+	private Text health_text;
+	private Text money_text; 
+	private Text price1_text;
+	private Text price2_text;
+	private Text attackIntro_text; 
+	private Text healthIntro_text;
+	private int attackPoint; 
+	private int healthPoint;
+	private int attackGold; 
+	private int healthGold; 
+	private int totalGold;
+	private boolean max; 
 
 	@Override
 	public void createScene(int lv) {
 		setBackground(new Background(Color.BLACK));
 		menuChildScene = new MenuScene(camera);
 		menuChildScene.setPosition(400, 240);
+		attackPoint = 3;
+		healthPoint = 30;
+		attackGold = 100; 
+		healthGold = 100;
+		totalGold = 15000;
+		max = false; 
 		
 		final IMenuItem buy1 = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_1, resourcesManager.buy_region, vbom), 1.2f, 1);
 		final IMenuItem buy2 = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_2, resourcesManager.buy_region, vbom), 1.2f, 1);
 		
-		Text attack_text = new Text(100, 200, resourcesManager.font, "Attack: 20", vbom);
+		attack_text = new Text(150, 200, resourcesManager.font, "Attack: 0123456789", vbom);
+		attack_text.setText("Attack:" + attackPoint);
 		attack_text.setColor(Color.WHITE);
-		Text health_text = new Text (100, 120, resourcesManager.font, "Health: 10", vbom);
+		health_text = new Text (150, 120, resourcesManager.font, "Health: 0123456789", vbom);
+		health_text.setText("Health: " + healthPoint);
 		health_text.setColor(Color.WHITE);
-		Text money_text = new Text (100, 40, resourcesManager.font, "Money: 100", vbom);
+		money_text = new Text (170, 40, resourcesManager.font, "Money: 0123456789", vbom);
+		money_text.setText("Money: " + totalGold); 
 		money_text.setColor(Color.WHITE);
-		Text price1_text = new Text (-280, -200, resourcesManager.font, "$50", vbom);
+		price1_text = new Text (-100, -150, resourcesManager.font, "$ 0123456789", vbom);
+		price1_text.setText("$ "+ attackGold);
 		price1_text.setColor(Color.WHITE);
-		Text price2_text = new Text (280, -200, resourcesManager.font, "$100", vbom);
+		price2_text = new Text (300, -150, resourcesManager.font, "$ 0123456789" + healthGold, vbom);
+		price2_text.setText("$ "+ healthGold);
 		price2_text.setColor(Color.WHITE);
+		attackIntro_text = new Text (-150, -50, resourcesManager.font, "Fire\nGrass!", vbom);
+		attackIntro_text.setScale(0.7f);
+		healthIntro_text = new Text (250, -50, resourcesManager.font, "Gym\nGrass!", vbom);
+		healthIntro_text.setScale(0.7f);
 		
-		caonima = new Sprite(-300, 150, resourcesManager.caonima_region, vbom) { 
+		caonima = new Sprite(-200, 120, resourcesManager.caonima_region, vbom) { 
 			
 			@Override 
 			protected void preDraw(GLState pGLState, Camera pCamera) { 
@@ -65,7 +87,7 @@ public class ShopScene extends BaseScene implements IOnMenuItemClickListener {
 			}
 		};
 		
-		attack = new Sprite(-250, -100, resourcesManager.attack_region, vbom) { 
+		attack = new Sprite(-250, -50, resourcesManager.attack_region, vbom) { 
 			
 			@Override 
 			protected void preDraw(GLState pGLState, Camera pCamera) { 
@@ -74,7 +96,16 @@ public class ShopScene extends BaseScene implements IOnMenuItemClickListener {
 			}
 		};
 		
-		health = new Sprite(250, -100, resourcesManager.health_region, vbom) { 
+		health = new Sprite(150, -50, resourcesManager.health_region, vbom) { 
+			
+			@Override 
+			protected void preDraw(GLState pGLState, Camera pCamera) { 
+				super.preDraw(pGLState, pCamera); 
+				pGLState.enableDither(); 
+			}
+		};
+		
+		caonima2 = new Sprite(-200, 120, resourcesManager.caonima2_region, vbom) { 
 			
 			@Override 
 			protected void preDraw(GLState pGLState, Camera pCamera) { 
@@ -88,6 +119,8 @@ public class ShopScene extends BaseScene implements IOnMenuItemClickListener {
 		menuChildScene.attachChild(caonima);
 		menuChildScene.attachChild(attack_text);
 		menuChildScene.attachChild(health_text);
+		menuChildScene.attachChild(attackIntro_text);
+		menuChildScene.attachChild(healthIntro_text);
 		menuChildScene.addMenuItem(buy1);
 		menuChildScene.addMenuItem(buy2);
 		menuChildScene.attachChild(money_text);
@@ -98,8 +131,8 @@ public class ShopScene extends BaseScene implements IOnMenuItemClickListener {
 		
 		menuChildScene.setOnMenuItemClickListener(this);
 		
-		buy1.setPosition(-250, -200);
-		buy2.setPosition(300,-100);
+		buy1.setPosition(-250, -150);
+		buy2.setPosition(150,-150);
 		
 		setChildScene(menuChildScene);
 	}
@@ -118,6 +151,86 @@ public class ShopScene extends BaseScene implements IOnMenuItemClickListener {
 	public void disposeScene() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private void incAttack() { 
+		if(attackPoint < 19) { 
+			if(totalGold >= attackGold) {
+				attackPoint += 1;
+				attack_text.setText("Attack: " + attackPoint);
+				totalGold -= attackGold; 
+				money_text.setText("Money: " + totalGold); 
+				attackGold += 10; 
+				price1_text.setText("$" + attackGold);
+			}
+		} 
+		else if(attackPoint == 19){ 
+			attackPoint += 1;
+			attack_text.setText("Attack: " + attackPoint);
+			totalGold -= attackGold; 
+			money_text.setText("Money: " + totalGold); 
+			attackGold += 10; 
+			price1_text.setText("MAX!");
+		}
+	}
+	
+	private void incHealth() { 
+		if(healthPoint < 190) {
+			if(totalGold >= healthGold) {
+				healthPoint += 10; 
+				health_text.setText("Health: " + healthPoint); 
+				totalGold -= healthGold; 
+				money_text.setText("Money: " + totalGold); 
+				healthGold += 10; 
+				price2_text.setText("$" + healthGold);
+			}
+		} else if(healthPoint == 190){ 
+			healthPoint += 10; 
+			health_text.setText("Health: " + healthPoint); 
+			totalGold -= healthGold; 
+			money_text.setText("Money: " + totalGold); 
+			healthGold += 10; 
+			price2_text.setText("MAX!");
+		}
+	}
+	
+	private void checkMax() { 
+		if(attackPoint == 20 && healthPoint == 200) { 
+			caonima.detachSelf(); 
+			menuChildScene.attachChild(caonima2);
+			max=true;
+		}
+	}
+	
+	public int getAttack() { 
+		return attackPoint; 
+	}
+	
+	public int getHealth() { 
+		return healthPoint;
+	}
+	
+	@Override
+	public boolean onMenuItemClicked(MenuScene pMenuScene, IMenuItem pMenuItem,
+			float pMenuItemLocalX, float pMenuItemLocalY) {
+		switch(pMenuItem.getID())
+		{
+		case MENU_1:
+			incAttack();
+			if(!max){
+			checkMax();
+			}
+			return true;
+		case MENU_2:
+			incHealth();
+			if(!max){ 
+			checkMax();
+			}
+			
+			return true;
+		default:
+			return false;
+		}
 	}
 	
 

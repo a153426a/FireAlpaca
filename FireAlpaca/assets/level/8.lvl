@@ -184,44 +184,28 @@
 	<!-- Enemy -->
 	<entity x="400"  y="30" type ="boss"/>
 	<entity x="370"  y="390" type ="redEnemy"/>
-	<entity x="390"  y="390" type ="redEnemy"/>
-	<entity x="410"  y="390" type ="redEnemy"/>
 	<entity x="430"  y="390" type ="redEnemy"/>
 	
 	<entity x="170"  y="370" type ="redEnemy"/>
-	<entity x="190"  y="370" type ="redEnemy"/>
-	<entity x="210"  y="370" type ="redEnemy"/>
-	<entity x="230"  y="370" type ="redEnemy"/>
 	<entity x="250"  y="370" type ="redEnemy"/>
 	
 	<entity x="550"  y="370" type ="redEnemy"/>
-	<entity x="570"  y="370" type ="redEnemy"/>
-	<entity x="590"  y="370" type ="redEnemy"/>
-	<entity x="610"  y="370" type ="redEnemy"/>
 	<entity x="630"  y="370" type ="redEnemy"/>
 	
 	<entity x="170"  y="290" type ="redEnemy"/>
 	<entity x="190"  y="290" type ="redEnemy"/>
-	<entity x="210"  y="290" type ="redEnemy"/>
-	<entity x="230"  y="290" type ="redEnemy"/>
 	<entity x="250"  y="290" type ="redEnemy"/>
 	
 	<entity x="550"  y="290" type ="redEnemy"/>
 	<entity x="570"  y="290" type ="redEnemy"/>
-	<entity x="590"  y="290" type ="redEnemy"/>
-	<entity x="610"  y="290" type ="redEnemy"/>
 	<entity x="630"  y="290" type ="redEnemy"/>
 	
 	<entity x="170"  y="210" type ="redEnemy"/>
 	<entity x="190"  y="210" type ="redEnemy"/>
-	<entity x="210"  y="210" type ="redEnemy"/>
-	<entity x="230"  y="210" type ="redEnemy"/>
 	<entity x="250"  y="210" type ="redEnemy"/>
 	
 	<entity x="550"  y="210" type ="redEnemy"/>
 	<entity x="570"  y="210" type ="redEnemy"/>
-	<entity x="590"  y="210" type ="redEnemy"/>
-	<entity x="610"  y="210" type ="redEnemy"/>
 	<entity x="630"  y="210" type ="redEnemy"/>
 	
 	<entity x="-800" y="-800" type="levelComplete"/>
