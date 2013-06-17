@@ -403,11 +403,11 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 		healthText.setScale(0.7f);
 		Text healthText2 = new Text(510, 460, resourcesManager.font, "Yellow:", vbom);
 		healthText2.setScale(0.7f);
-		health_bar = new Rectangle(180, 470, (player.getHealth()-1)/player.total_health*200, 10, vbom);
+		health_bar = new Rectangle(180, 470, player.getHealth()/player.total_health*200, 10, vbom);
 		health_bar.setAnchorCenterX(0);
 		health_bar.setColor(Color.RED);
 		
-		health_bar2 = new Rectangle(580, 470, (player2.getHealth()-1)/player2.total_health*200, 10, vbom);
+		health_bar2 = new Rectangle(580, 470, player2.getHealth()/player2.total_health*200, 10, vbom);
 		health_bar2.setAnchorCenterX(0);
 		health_bar2.setColor(Color.GREEN);
 		
@@ -707,8 +707,9 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 						if (health > 1) {
 							
 							player2.setHealth(health - player.getAttack());
-							health_bar2.setWidth((player2.getHealth()-1)/player.total_health*200);
+							health_bar2.setWidth(player2.getHealth()/player.total_health*200);
 						} else {
+							player2.setHealth(0);
 							x1.getBody().setUserData("player2_dead");
 						}
 						x2.getBody().setUserData("player_bullet_deleted");
@@ -720,8 +721,9 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 						float health = player2.getHealth();
 						if (health > 1) {
 							player2.setHealth(health - player.getAttack());
-							health_bar2.setWidth((player2.getHealth()-1)/player.total_health*200);
+							health_bar2.setWidth(player2.getHealth()/player.total_health*200);
 						} else {
+							player2.setHealth(0);
 							x2.getBody().setUserData("player2_dead");
 						}
 						x1.getBody().setUserData("player_bullet_deleted");
@@ -734,8 +736,9 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 						float health = player.getHealth();
 						if (health > 1) {
 							player.setHealth(health - player2.getAttack());
-							health_bar.setWidth((player.getHealth()-1)/player.total_health*200);
+							health_bar.setWidth(player.getHealth()/player.total_health*200);
 						} else {
+							player.setHealth(0);
 							x1.getBody().setUserData("player_dead");
 						}
 						x2.getBody().setUserData("player2_bullet_deleted");
@@ -747,8 +750,9 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 						float health = player.getHealth();
 						if (health > 1) {
 							player.setHealth(health - player2.getAttack());
-							health_bar.setWidth((player.getHealth()-1)/player.total_health*200);
+							health_bar.setWidth(player.getHealth()/player.total_health*200);
 						} else {
+							player.setHealth(0);
 							x2.getBody().setUserData("player_dead");
 						}
 						x1.getBody().setUserData("player2_bullet_deleted");

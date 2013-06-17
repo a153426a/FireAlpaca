@@ -292,7 +292,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 		
 		Text healthText = new Text(510, 460, resourcesManager.font, "Health:", vbom);
 		healthText.setScale(0.7f);
-		health_bar = new Rectangle(580, 470, (player.getHealth()-1)/player.total_health*200, 10, vbom);
+		health_bar = new Rectangle(580, 470, player.getHealth()/player.total_health*200, 10, vbom);
 		health_bar.setAnchorCenterX(0);
 		health_bar.setColor(Color.GREEN);
 		
@@ -468,7 +468,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 								protected void onManagedUpdate(
 										float pSecondsElapsed) {
 									super.onManagedUpdate(pSecondsElapsed);
-									health_bar.setWidth((player.getHealth()-3)/player.total_health*200);
+									health_bar.setWidth(player.getHealth()/player.total_health*200);
 									
 									if ((level == 1 || level == 5)
 											&& enemies.isEmpty()) {
@@ -770,9 +770,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 						.getBody().getUserData().equals("yellowEnemy"))
 						&& x1.getBody().getUserData().equals("player")) {
 					float health = player.getHealth();
-					if (health > 1) {
-						player.setHealth(health - 1);
+					if (health > 3) {
+						player.setHealth(health - 3);
 					} else {
+						player.setHealth(0);
 						x1.getBody().setUserData("player_dead");
 					}
 				}
@@ -1034,6 +1035,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 					if (health > 3) {
 						player.setHealth(health - 3);
 					} else {
+						player.setHealth(0);
 						x1.getBody().setUserData("player_dead");
 					}
 					x2.getBody().setUserData("enemy_bullet_deleted");
@@ -1046,6 +1048,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 					if (health > 3) {
 						player.setHealth(health - 3);
 					} else {
+						player.setHealth(0);
 						x2.getBody().setUserData("player_dead");
 					}
 					x1.getBody().setUserData("enemy_bullet_deleted");
