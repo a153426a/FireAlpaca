@@ -20,7 +20,7 @@ public abstract class Player extends AnimatedSprite {
 	private float health;
 	public float total_health;
 	private String userdata;
-	private float attack;
+	public float attack;
 	
 	public Player(float pX, float pY, VertexBufferObjectManager vbo, Camera camera, PhysicsWorld physicsWorld, ITiledTextureRegion region) {
 		
@@ -89,6 +89,17 @@ public abstract class Player extends AnimatedSprite {
 	
 	public float getAttack() {
 		return attack;
+	}
+	public void setAttack(float a) { 
+		attack = a;
+	}
+	
+	public float getTHealth() { 
+		return total_health;
+	}
+	
+	public void setTHealth(float h) { 
+		total_health = h;
 	}
 	
 		/*GameScene scene = (GameScene) SceneManager.getInstance().getCurrentScene(); 

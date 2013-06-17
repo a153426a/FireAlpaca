@@ -76,21 +76,27 @@ ISocketConnectionClientConnectorListener {
 								
 								AddPointClientMessage message = (AddPointClientMessage) pClientMessage; 
 								MultiScene multi = (MultiScene)SceneManager.getInstance().getCurrentScene();
-								
-								
+								multi.player.setHealth(message.getHealth1());
+								multi.player2.setHealth(message.getHealth2());
+								if(message.getHealth1() > 0 && message.getHealth2() > 0 ){
 									if(message.getShoot() == 0) { 
 										//the player2 move 
 										multi.player2.getBody().setTransform(new Vector2(message.getX()/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, 
 												message.getY()/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT), 0);
 									} else {
 									//the player2 shoot
-										multi.player2.setHealth(message.getHealth());
 										Bullet bullet = new Bullet(multi.player2.getX() + 10 * message.getBX(), multi.player2.getY() + 10
 												* message.getBY(), multi.vbom, multi.camera,multi.physicsWorld, "player2_bullet", ResourcesManager.getInstance().bullet2_region);
 										multi.player2_bullets.put(bullet.bullet_get_body(), bullet);
 										multi.attachChild(bullet);
 										bullet.bullet_get_body().setLinearVelocity(message.getBX() * 20, message.getBY() * 20);
 									}
+								} else if(message.getHealth1() <= 0) { 
+									multi.player.setUserData("player_dead");
+								} else if(message.getHealth2() <= 0) { 
+									multi.player2.setUserData("player2_dead");
+								}
+									
 								//AddPointServerMessage outgoingMessage = new AddPointServerMessage(message.getID(), message.getX(), message.getY());
 								//sendMessage(outgoingMessage);
 								

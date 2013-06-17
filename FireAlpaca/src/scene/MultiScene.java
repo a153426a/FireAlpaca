@@ -147,11 +147,29 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 		setOnSceneTouchListener(this);
 		createGameOverText();
 		levelCompleteWindow = new LevelCompleteWindow(vbom);
+		loadPlayerData(); 
 		
 	}
+	
 
 	
 	
+	private void loadPlayerData() {
+		if(mServer != null) { 
+			player.setAttack(3); 
+			player.setTHealth(30); 
+			player.setHealth(player.getTHealth());
+		} else if(mServer != null) { 
+			player.setAttack(3); 
+			player.setTHealth(30); 
+			player.setHealth(player.getTHealth());
+		}
+		
+	}
+
+
+
+
 	public void createDialog() {
 		AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
 		dialog.setTitle("Choose server or client");
@@ -240,7 +258,7 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 							player.getBody().setLinearVelocity(pValueX * 3,
 									pValueY * 3);
 							AddPointServerMessage message = (AddPointServerMessage) MultiScene.this.mMessagePool.obtainMessage(ServerMessages.SERVER_MESSAGE_ADD_POINT);
-							message.set(SERVER_ID, player.getX(), player.getY(), 0, 0, 0, backKey, player.getHealth());
+							message.set(SERVER_ID, player.getX(), player.getY(), 0, 0, 0, backKey, player.getHealth(), player2.getHealth());
 							mServer.sendMessage(message);
 							MultiScene.this.mMessagePool.recycleMessage(message);
 						}
@@ -249,7 +267,7 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 							player2.getBody().setLinearVelocity(pValueX * 3,
 									pValueY * 3);
 							AddPointClientMessage message = (AddPointClientMessage) MultiScene.this.mMessagePool.obtainMessage(ClientMessages.CLIENT_MESSAGE_ADD_POINT);
-							message.set(CLIENT_ID, player2.getX(), player2.getY(), 0, 0, 0, backKey, player2.getHealth());
+							message.set(CLIENT_ID, player2.getX(), player2.getY(), 0, 0, 0, backKey, player.getHealth(), player2.getHealth());
 							mClient.sendMessage(message);
 							MultiScene.this.mMessagePool.recycleMessage(message);
 						}
@@ -305,7 +323,7 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 							if (mServer != null) {
 								player_shoot(xVel, yVel);
 								AddPointServerMessage message = (AddPointServerMessage) MultiScene.this.mMessagePool.obtainMessage(ServerMessages.SERVER_MESSAGE_ADD_POINT);
-								message.set(SERVER_ID, 0, 0, 1, xVel, yVel, backKey, player.getHealth());
+								message.set(SERVER_ID, player.getX(), player.getY(), 1, xVel, yVel, backKey, player.getHealth(), player2.getHealth());
 								mServer.sendMessage(message);
 								MultiScene.this.mMessagePool.recycleMessage(message);
 							}
@@ -313,7 +331,7 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 							else if (mClient != null) {
 								player2_shoot(xVel, yVel);
 								AddPointClientMessage message = (AddPointClientMessage) MultiScene.this.mMessagePool.obtainMessage(ClientMessages.CLIENT_MESSAGE_ADD_POINT);
-								message.set(CLIENT_ID, 0, 0, 1, xVel, yVel, backKey, player.getHealth());
+								message.set(CLIENT_ID, player2.getX(), player2.getY(), 1, xVel, yVel, backKey, player.getHealth(), player2.getHealth());
 								mClient.sendMessage(message);
 								MultiScene.this.mMessagePool.recycleMessage(message);
 							}
@@ -381,15 +399,15 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 		gameHUD = new HUD();
 		camera.setHUD(gameHUD);
 		
-		Text healthText = new Text(510, 460, resourcesManager.font, "Health1:", vbom);
+		Text healthText = new Text(100, 460, resourcesManager.font, "White:", vbom);
 		healthText.setScale(0.7f);
-		Text healthText2 = new Text(100, 460, resourcesManager.font, "Health2:", vbom);
+		Text healthText2 = new Text(510, 460, resourcesManager.font, "Yellow:", vbom);
 		healthText2.setScale(0.7f);
-		health_bar = new Rectangle(580, 470, (player.getHealth()-1)/player.total_health*200, 10, vbom);
+		health_bar = new Rectangle(180, 470, (player.getHealth()-1)/player.total_health*200, 10, vbom);
 		health_bar.setAnchorCenterX(0);
 		health_bar.setColor(Color.RED);
 		
-		health_bar2 = new Rectangle(180, 470, (player2.getHealth()-1)/player2.total_health*200, 10, vbom);
+		health_bar2 = new Rectangle(580, 470, (player2.getHealth()-1)/player2.total_health*200, 10, vbom);
 		health_bar2.setAnchorCenterX(0);
 		health_bar2.setColor(Color.GREEN);
 		
@@ -692,7 +710,7 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 						float health = player2.getHealth();
 						if (health > 1) {
 							
-							player2.setHealth(health - 1);
+							player2.setHealth(health - player.getAttack());
 							health_bar2.setWidth((player2.getHealth()-1)/player.total_health*200);
 						} else {
 							x1.getBody().setUserData("player2_dead");
@@ -705,7 +723,7 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 							&& x1.getBody().getUserData().equals("player_bullet")) {
 						float health = player2.getHealth();
 						if (health > 1) {
-							player2.setHealth(health - 1);
+							player2.setHealth(health - player.getAttack());
 							health_bar2.setWidth((player2.getHealth()-1)/player.total_health*200);
 						} else {
 							x2.getBody().setUserData("player2_dead");
@@ -719,7 +737,7 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 							&& x2.getBody().getUserData().equals("player2_bullet")) {
 						float health = player.getHealth();
 						if (health > 1) {
-							player.setHealth(health - 1);
+							player.setHealth(health - player2.getAttack());
 							health_bar.setWidth((player.getHealth()-1)/player.total_health*200);
 						} else {
 							x1.getBody().setUserData("player_dead");
@@ -732,7 +750,7 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 							&& x1.getBody().getUserData().equals("player2_bullet")) {
 						float health = player.getHealth();
 						if (health > 1) {
-							player.setHealth(health - 1);
+							player.setHealth(health - player2.getAttack());
 							health_bar.setWidth((player.getHealth()-1)/player.total_health*200);
 						} else {
 							x2.getBody().setUserData("player_dead");

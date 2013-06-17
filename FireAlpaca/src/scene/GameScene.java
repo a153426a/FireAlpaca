@@ -129,6 +129,14 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 		createIntro();
 		createGameOverText();
 		levelCompleteWindow = new LevelCompleteWindow(vbom);
+		loadPlayerData();
+		
+	}
+
+	private void loadPlayerData() {
+		player.setAttack(3); 
+		player.setTHealth(30); 
+		player.setHealth(player.getTHealth());
 		
 	}
 

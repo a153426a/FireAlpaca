@@ -84,19 +84,25 @@ private static final String TAG = "CLIENT";
 							AddPointServerMessage message = (AddPointServerMessage) pServerMessage;
 								// obtain the class casted server message
 							MultiScene multi = (MultiScene)SceneManager.getInstance().getCurrentScene();
-							
-							if(message.getShoot() == 0) { 
-							//the player move 
-							multi.player.getBody().setTransform(new Vector2(message.getX()/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, 
-									message.getY()/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT), 0);
-							} else {
-								//the player shoot
-								multi.player.setHealth(message.getHealth());
-								Bullet bullet = new Bullet(multi.player.getX() + 10 * message.getBX(), multi.player.getY() + 10
-										* message.getBY(), multi.vbom, multi.camera,multi.physicsWorld, "player_bullet", ResourcesManager.getInstance().bullet_region);
-								multi.player_bullets.put(bullet.bullet_get_body(), bullet);
-								multi.attachChild(bullet);
-								bullet.bullet_get_body().setLinearVelocity(message.getBX() * 20, message.getBY() * 20);
+							multi.player.setHealth(message.getHealth1());
+							multi.player2.setHealth(message.getHealth2());
+							if(message.getHealth1() > 0 && message.getHealth2() > 0 ){
+								if(message.getShoot() == 0) { 
+									//the player move 
+									multi.player.getBody().setTransform(new Vector2(message.getX()/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, 
+										message.getY()/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT), 0);
+								} else {
+									//the player shoot
+									Bullet bullet = new Bullet(multi.player.getX() + 10 * message.getBX(), multi.player.getY() + 10
+											* message.getBY(), multi.vbom, multi.camera,multi.physicsWorld, "player_bullet", ResourcesManager.getInstance().bullet_region);
+									multi.player_bullets.put(bullet.bullet_get_body(), bullet);
+									multi.attachChild(bullet);
+									bullet.bullet_get_body().setLinearVelocity(message.getBX() * 20, message.getBY() * 20);
+								}
+							} else if(message.getHealth1() <= 0) { 
+								multi.player.setUserData("player_dead");
+							} else if(message.getHealth2() <= 0) { 
+								multi.player2.setUserData("player2_dead");
 							}
 						
 						}

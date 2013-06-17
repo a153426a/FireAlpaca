@@ -21,7 +21,8 @@ public static final short SERVER_MESSAGE_ADD_POINT = ClientMessages.CLIENT_FLAG_
 		private float bX; 
 		private float bY; 
 		private boolean backKey;
-		private float health; 
+		private float health1;
+		private float health2; 
 		
 		// Empty constructor needed for message pool allocation
 		public AddPointServerMessage(){
@@ -29,7 +30,7 @@ public static final short SERVER_MESSAGE_ADD_POINT = ClientMessages.CLIENT_FLAG_
 		}
 		
 		// Constructor
-		public AddPointServerMessage(final int pID, final float pX, final float pY, final int shoot, final float bX, final float bY, final boolean backKey, final float health){
+		public AddPointServerMessage(final int pID, final float pX, final float pY, final int shoot, final float bX, final float bY, final boolean backKey, final float health1, final float health2){
 			this.mID = pID;
 			this.mX = pX;
 			this.mY = pY;
@@ -37,12 +38,13 @@ public static final short SERVER_MESSAGE_ADD_POINT = ClientMessages.CLIENT_FLAG_
 			this.bX = bX; 
 			this.bY = bY;
 			this.backKey = backKey;
-			this.health = health; 
+			this.health1 = health1; 
+			this.health2 = health2;
 			
 		}
 		
 		// A Setter is needed to change values when we obtain a message from the message pool
-		public void set(final int pID, final float pX, final float pY, final int shoot, final float bX, final float bY, final boolean backKey, final float health){
+		public void set(final int pID, final float pX, final float pY, final int shoot, final float bX, final float bY, final boolean backKey, final float health1, final float health2){
 			this.mID = pID;
 			this.mX = pX;
 			this.mY = pY;
@@ -50,7 +52,8 @@ public static final short SERVER_MESSAGE_ADD_POINT = ClientMessages.CLIENT_FLAG_
 			this.bX = bX; 
 			this.bY = bY;
 			this.backKey = backKey;
-			this.health = health; 
+			this.health1 = health1; 
+			this.health2 = health2;
 		}
 		
 		// Getters
@@ -80,8 +83,12 @@ public static final short SERVER_MESSAGE_ADD_POINT = ClientMessages.CLIENT_FLAG_
 			return this.backKey;
 		}
 		
-		public float getHealth() { 
-			return this.health;
+		public float getHealth1() { 
+			return this.health1;
+		}
+		
+		public float getHealth2() { 
+			return this.health2; 
 		}
 		
 		// Get the message flag
@@ -97,11 +104,12 @@ public static final short SERVER_MESSAGE_ADD_POINT = ClientMessages.CLIENT_FLAG_
 			this.mID = pDataInputStream.readInt();
 			this.mX = pDataInputStream.readFloat();
 			this.mY = pDataInputStream. readFloat();
-			this.shoot = pDataInputStream.readInt();; 
+			this.shoot = pDataInputStream.readInt(); 
 			this.bX = pDataInputStream.readFloat(); 
 			this.bY = pDataInputStream.readFloat();
 			this.backKey = pDataInputStream.readBoolean();
-			this.health = pDataInputStream. readFloat();
+			this.health1 = pDataInputStream. readFloat();
+			this.health2 = pDataInputStream. readFloat();
 		}
 
 		// Write the message's member variables to the output stream
@@ -115,7 +123,9 @@ public static final short SERVER_MESSAGE_ADD_POINT = ClientMessages.CLIENT_FLAG_
 			pDataOutputStream.writeFloat(this.bX); 
 			pDataOutputStream.writeFloat(this.bY);
 			pDataOutputStream.writeBoolean(this.backKey);
-			pDataOutputStream.writeFloat(this.health);
+			pDataOutputStream.writeFloat(this.health1);
+			pDataOutputStream.writeFloat(this.health2);
+			
 		}
 	}
 	
