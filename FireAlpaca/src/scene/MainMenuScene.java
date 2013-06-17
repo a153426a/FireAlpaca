@@ -10,6 +10,7 @@ import org.andengine.opengl.util.GLState;
 import org.andengine.engine.camera.Camera;
 
 import com.example.base.BaseScene;
+import com.example.manager.ResourcesManager;
 import com.example.manager.SceneManager;
 import com.example.manager.SceneManager.SceneType;
 
@@ -42,8 +43,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 
 	@Override
 	public void disposeScene() {
-		// TODO Auto-generated method stub
-		
+		ResourcesManager.getInstance().mass.stop();
 	}
 	
 	private void createBackground() {
@@ -108,11 +108,18 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 			SceneManager.getInstance().loadMultiScene(engine); 
 			return true;
 		case MENU_MUSIC:
+			if (ResourcesManager.getInstance().mass.isPlaying()) {
+				ResourcesManager.getInstance().mass.pause();
+			}
+			else {ResourcesManager.getInstance().mass.play();}
 			return true;
 		case MENU_HELP:
 			this.activity.runOnUiThread(new Runnable() {
 			    public void run() {
-			    	msbox("How to Play","hello");
+			    	String helptext = "Control the alpaca and protect the earth!\nIn each level, use left" +
+			    			" control for moving the alpaca around and use right control for firing at the enemies!" +
+			    			"\nTips:Upgrade your attack & health at shop using the coins you pick up in Single Player Mode.";
+					msbox("How to Play",helptext );
 			    }
 			});
 			return true;

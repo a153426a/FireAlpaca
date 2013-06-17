@@ -173,25 +173,32 @@ public class SceneManager {
 		ResourcesManager.getInstance().loadSelectorScene();
 		selectorScene = new SelectorScene(); 
 		SceneManager.getInstance().setScene(selectorScene); 
-		ResourcesManager.getInstance().unloadMenuTextures(); 
+		disposeMenuScene();
 	}
 	
 	
+	private void disposeMenuScene() {
+		menuScene.disposeScene();
+		ResourcesManager.getInstance().unloadMenuTextures(); 
+		
+	}
+
 	public void createShopScene() { 
 		ResourcesManager.getInstance().loadShopGraphics();
 		shopScene = new ShopScene(); 
 		SceneManager.getInstance().setScene(shopScene); 
-		ResourcesManager.getInstance().unloadMenuTextures(); 
+		disposeMenuScene();
 	}
 	
 	public void createLeaderScene() { 
 		leaderScene = new LeaderScene(); 
 		SceneManager.getInstance().setScene(leaderScene); 
-		ResourcesManager.getInstance().unloadMenuTextures(); 
+		disposeMenuScene(); 
 	}
 	
 	public void createMenuScene() {
 		ResourcesManager.getInstance().loadMenuResources();
+		ResourcesManager.getInstance().mass.play();
 		menuScene = new MainMenuScene();
 		loadingScene = new LoadingScene();
 		SceneManager.getInstance().setScene(menuScene);
@@ -243,7 +250,7 @@ public class SceneManager {
 
 public void loadMultiScene(final Engine mEngine) {
 		
-		ResourcesManager.getInstance().unloadMenuTextures();
+		disposeMenuScene();
 		setScene(loadingScene); 
 		mEngine.registerUpdateHandler(new TimerHandler(0.1f, new ITimerCallback() { 
 			
@@ -297,6 +304,7 @@ public void loadMultiScene(final Engine mEngine) {
 				mEngine.unregisterUpdateHandler(pTimerHandler); 
 				ResourcesManager.getInstance().loadMenuTextures(); 
 				setScene(menuScene);
+				ResourcesManager.getInstance().mass.play();
 				
 			}
 
@@ -309,6 +317,7 @@ public void loadMultiScene(final Engine mEngine) {
 		ResourcesManager.getInstance().unloadSelectorAtlas();
 		ResourcesManager.getInstance().loadMenuTextures();
 		setScene(menuScene);
+		ResourcesManager.getInstance().mass.play();
 		
 	}
 	
@@ -317,12 +326,14 @@ public void loadMultiScene(final Engine mEngine) {
 		ResourcesManager.getInstance().unloadShopAtlas();
 		ResourcesManager.getInstance().loadMenuTextures();
 		setScene(menuScene);
+		ResourcesManager.getInstance().mass.play();
 		
 	}
 	public void loadMenuSceneFromLeader(final Engine mEngine) { 
 		
 		ResourcesManager.getInstance().loadMenuTextures();
 		setScene(menuScene);
+		ResourcesManager.getInstance().mass.play();
 		
 	}
 	

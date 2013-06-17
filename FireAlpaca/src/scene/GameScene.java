@@ -112,6 +112,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
 	@Override
 	public void createScene(int lv) {
+		ResourcesManager.getInstance().mi.play();
 		enemies = new HashMap<Body, Enemy>();
 
 		breakables = new HashMap();
@@ -247,7 +248,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
 	@Override
 	public void disposeScene() {
-
+		if (ResourcesManager.getInstance().mi.isPlaying())
+		ResourcesManager.getInstance().mi.stop();
+		if (ResourcesManager.getInstance().mario.isPlaying())
+		ResourcesManager.getInstance().mario.stop();
 		camera.setHUD(null);
 		camera.setCenter(400, 240);
 
@@ -460,6 +464,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 									
 									if ((level == 1 || level == 5)
 											&& enemies.isEmpty()) {
+										ResourcesManager.getInstance().mi.stop();
+										ResourcesManager.getInstance().mario.play();
+				
 										if (score > 300 && score < 600) {
 											levelCompleteWindow.display(
 													StarsCount.TWO,
@@ -487,7 +494,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 									} else if ((level == 2 || level == 6)
 											&& (baseDestoryed || enemies
 													.isEmpty())) {
-										
+										ResourcesManager.getInstance().mi.stop();
+										ResourcesManager.getInstance().mario.play();
 											levelCompleteWindow.display(
 													StarsCount.THREE,
 													GameScene.this, camera);
@@ -507,6 +515,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 													&& player.getX() < 795
 													&& player.getY() > 185 && player
 													.getY() < 235)) {
+										ResourcesManager.getInstance().mi.stop();
+										ResourcesManager.getInstance().mario.play();
 										if (score > 300 && score < 500) {
 											levelCompleteWindow.display(
 													StarsCount.TWO,
@@ -536,6 +546,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 													&& player.getX() < 795
 													&& player.getY() > 5 && player
 													.getY() < 55)) {
+										ResourcesManager.getInstance().mi.stop();
+										ResourcesManager.getInstance().mario.play();
 										if (score > 1200 && score < 1700) {
 											levelCompleteWindow.display(
 													StarsCount.TWO,
@@ -561,6 +573,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 										this.setVisible(false);
 										this.setIgnoreUpdate(true);
 									} else if (level == 4 && enemies.isEmpty()) {
+										ResourcesManager.getInstance().mi.stop();
+										ResourcesManager.getInstance().mario.play();
 										if (score > 100 && score < 200) {
 											levelCompleteWindow.display(
 													StarsCount.TWO,
@@ -586,6 +600,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 										this.setVisible(false);
 										this.setIgnoreUpdate(true);
 									} else if (level == 8 && enemies.isEmpty()) {
+										ResourcesManager.getInstance().mi.stop();
+										ResourcesManager.getInstance().mario.play();
 										if (score > 100 && score < 200) {
 											levelCompleteWindow.display(
 													StarsCount.TWO,

@@ -1,5 +1,9 @@
 package com.example.manager;
 
+import java.io.IOException;
+
+import org.andengine.audio.music.Music;
+import org.andengine.audio.music.MusicFactory;
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.BoundCamera;
 import org.andengine.engine.camera.Camera;
@@ -47,6 +51,7 @@ public class ResourcesManager {
 	public ITextureRegion shop_region;
 	public ITextureRegion help_region;
 	public ITextureRegion leaderboard_region;
+	public Music mass;
 	
 	//loading scene font
 	public Font font;
@@ -64,6 +69,8 @@ public class ResourcesManager {
 	public ITextureRegion flag_region;
 	public ITextureRegion bullet_region;
 	public ITextureRegion bullet2_region;
+	public Music mario;
+	public Music mi;
 	
 	//player region 
 	public ITiledTextureRegion player2_region;
@@ -235,7 +242,7 @@ public class ResourcesManager {
 		breakable_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "breakable.png");
 		coin_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "coin.png");
 		player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "player.png", 3, 1); 
-		player2_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "player.png", 3, 1); 
+		player2_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "player2.png", 3, 1); 
 		base_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "base.png");
 		flag_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "flag.png");
 		bullet_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "bullet.png");
@@ -248,6 +255,19 @@ public class ResourcesManager {
 		
 		complete_window_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "levelComplete.png");
 		complete_stars_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "star.png", 2, 1);
+		
+		try {
+			//mario = MusicFactory.createMusicFromAsset(engine.getMusicManager(), activity,"gfx/game/mario.ogg");
+			mi = MusicFactory.createMusicFromAsset(engine.getMusicManager(), activity,"gfx/game/mi.ogg");
+			mario = MusicFactory.createMusicFromAsset(engine.getMusicManager(), activity,"gfx/game/mario.ogg");
+			mario.setVolume(1.5f);
+		} catch (IllegalStateException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		//analog control 
 		analogControlTextureAtlas = new BitmapTextureAtlas(activity.getTextureManager(), 256, 128, TextureOptions.BILINEAR);
@@ -286,7 +306,16 @@ public class ResourcesManager {
 		shop_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "shop.png");
 		help_region =  BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "help.png");
 		leaderboard_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "leaderboard.png");
-		
+		try {
+			mass = MusicFactory.createMusicFromAsset(engine.getMusicManager(), activity,"gfx/menu/mass.ogg");
+			mass.setVolume(1.5f);
+		} catch (IllegalStateException e1) {
+			Debug.e(e1);
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			Debug.e(e1);
+			e1.printStackTrace();
+		}
 		try {
 			this.menuTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
 			this.menuTextureAtlas.load();
