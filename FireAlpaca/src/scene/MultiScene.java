@@ -703,9 +703,9 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 					// p1 bullet & p2
 				 if (x1.getBody().getUserData().equals("player2")
 							&& x2.getBody().getUserData().equals("player_bullet")) {
+					 x2.getBody().setUserData("player_bullet_deleted");
 						float health = player2.getHealth();
 						if (health > 1) {
-							
 							player2.setHealth(health - player.getAttack());
 							health_bar2.setWidth(player2.getHealth()/player.total_health*200);
 						} else {
@@ -718,6 +718,7 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 					
 					else if (x2.getBody().getUserData().equals("player2")
 							&& x1.getBody().getUserData().equals("player_bullet")) {
+						x1.getBody().setUserData("player_bullet_deleted");
 						float health = player2.getHealth();
 						if (health > 1) {
 							player2.setHealth(health - player.getAttack());
@@ -726,13 +727,14 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 							player2.setHealth(0);
 							x2.getBody().setUserData("player2_dead");
 						}
-						x1.getBody().setUserData("player_bullet_deleted");
+						
 
 					}
 					
 					// p2 bullet & p1
 					else if (x1.getBody().getUserData().equals("player")
 							&& x2.getBody().getUserData().equals("player2_bullet")) {
+						x2.getBody().setUserData("player2_bullet_deleted");
 						float health = player.getHealth();
 						if (health > 1) {
 							player.setHealth(health - player2.getAttack());
@@ -741,12 +743,12 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 							player.setHealth(0);
 							x1.getBody().setUserData("player_dead");
 						}
-						x2.getBody().setUserData("player2_bullet_deleted");
 
 					}
 					
 					else if (x2.getBody().getUserData().equals("player")
 							&& x1.getBody().getUserData().equals("player2_bullet")) {
+						x1.getBody().setUserData("player2_bullet_deleted");
 						float health = player.getHealth();
 						if (health > 1) {
 							player.setHealth(health - player2.getAttack());
@@ -755,7 +757,6 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 							player.setHealth(0);
 							x2.getBody().setUserData("player_dead");
 						}
-						x1.getBody().setUserData("player2_bullet_deleted");
 
 					}
 					
