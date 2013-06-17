@@ -539,11 +539,7 @@ public class MultiScene extends BaseScene implements IOnSceneTouchListener {
 										float pSecondsElapsed) {
 									super.onManagedUpdate(pSecondsElapsed);
 									
-									if(player.getHealth() <= 0) { 
-										displayGameOverText("Yellow"); 
-									} if(player2.getHealth() <= 0) { 
-										displayGameOverText("White");
-									}
+									
 									
 									
 								}
